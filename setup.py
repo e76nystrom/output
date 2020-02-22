@@ -1,4 +1,4 @@
-#!/cygdrive/c/Python27/Python.exe
+#!/cygdrive/c/Python37/Python.exe
 
 import os
 import re

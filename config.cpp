@@ -8,7 +8,7 @@ void pinConfig()
 
  pinMode(A_Pin, OUTPUT);
  pinMode(B_Pin, OUTPUT);
- pinMode(INDDX_Pin, OUTPUT);
+ pinMode(INDEX_Pin, OUTPUT);
  pinMode(SYNC_Pin, OUTPUT);
  pinMode(T1_PWM_A_Pin, OUTPUT);
  pinMode(T3_PWM_A_Pin, OUTPUT);
@@ -60,6 +60,11 @@ void pinConfig()
  pinMode(OUT4_Pin, OUTPUT);
  pinMode(SW12_V1_Pin, OUTPUT);
  pinMode(SW12_V2_Pin, OUTPUT);
+ pinMode(EXTCTL0_Pin, OUTPUT);
+ pinMode(EXTCTL1_Pin, OUTPUT);
+ pinMode(EXTCTL2_Pin, OUTPUT);
+ pinMode(EXTCTL3_Pin, OUTPUT);
+ pinMode(PWMSEL_Pin, OUTPUT);
 
 #endif
 

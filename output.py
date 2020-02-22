@@ -1,4 +1,4 @@
-#!/cygdrive/c/Python27/Python.exe
+#!/cygdrive/c/Python37/Python.exe
 
 inputTest = True                # simulated inputs for testing
 
@@ -10,53 +10,56 @@ else:
 if True:
     defineMega = \
         (\
-         ("INPUT_LOOP", 1),
-         ("SPINDLE_PWM_TEST", 1),
-         ("CHARGE_PUMP_TEST", 1),
+         ("INPUT_LOOP", 1),     # enable input loop
+         ("SPINDLE_PWM_TEST", 1), # spindle pwm test
+         ("CHARGE_PUMP_TEST", 1), # charge pump pwm test
 
-         ("TMR2_PWM_TIMER", 1),
-         ("TMR3_PWM_TIMER", 0),
+         ("TMR2_PWM_TIMER", 1), # timer 2 is pwm timer
+         ("TMR3_PWM_TIMER", 0), # timer 3 is pwm timer
         )
 
     pinsMega = \
         (\
-         ("A",        64, "out"),
-         ("B",        65, "out"),
-         ("INDDX",    66, "out"),
-         ("SYNC",     67, "out"),
-         ("T1_PWM_A", 11, "out"), # fast pwm also
+         ("A",        68, "out"),
+         ("B",        69, "out"),
+         ("INDEX",    32, "out"),
+         ("SYNC",     33, "out"),
+
+         ("T1_PWM_A", 11, "out"), # FastPmw
+
          ("T3_PWM_A",  5, "out"), # spindle pwm simulator
          ("T4_PWM_A",  6, "out"), # charge pump simulator
 
-         ("CHG_PUMP", 20, ("exti, rising")),
-         ("PWM",      21, ("exti, change")),
+         ("CHG_PUMP", 20, ("exti, rising")), # ChgPump
+         ("PWM",      21, ("exti, change")), # PWM
 
-         ("SP_FWD",     23, inTest),
-         ("SP_REV",     25, inTest),
-         ("E_STOP_NO",  29, inTest),
-         ("E_STOP_NC",  31, inTest),
-         ("E_STOP_RST", 27, inTest + ", low"),
+         ("SP_FWD",     23, inTest), # SpRwd
+         ("SP_REV",     25, inTest), # SpRev
+         ("E_STOP_NO",  29, inTest), # ESNO
+         ("E_STOP_NC",  31, inTest), # ESNC
+         ("E_STOP_RST", 27, inTest + ", low"), # EStop Reset
 
-         ("FAST_PWM",   11, "out"),
-         ("VFD_FWD",    28, "out"),
-         ("VFD_REV",    30, "out"),
-         ("SP_ENA",     60, "out"),
-         ("E_STOP_PC",  61, "out"),
-         ("E_STOP_RLY", 62, "out"),
-         ("STEP_DIS",   63, "out"),
-         ("W_DOG",      38, "out"),
-         ("PILOT",      46, "out"),
+         ("FAST_PWM",   11, "out"), # FastPwm
+         ("VFD_FWD",    28, "out"), # FwdIn
+         ("VFD_REV",    30, "out"), # RevIn
+         ("SP_ENA",     64, "out"), # ProcSpindleRelay
+         ("E_STOP_PC",  65, "out"), # ProcEStopSig
+         ("E_STOP_RLY", 66, "out"), # ProcEStopRelay
+         ("STEP_DIS",   67, "out"), # ProcStepDisable
+         ("W_DOG",      44, "out"), # WD
+         ("PILOT",      46, "out"), # Pilot
 
-         ("LED",        13, "out"),     # built in led
+         ("LED",        13, "out"), # built in led
          ("T2",         68, "out"),
-         ("DBG0",       32, "out"),
-         ("DBG1",       33, "out"),
-         ("DBG2",       34, "out"),
-         ("DBG3",       35, "out"),
-         ("DBG4",       36, "out"),
-         ("DBG5",       37, "out"),
 
-         ("PIN2",	14, "in"),
+         ("DBG0",       34, "out"),
+         ("DBG1",       35, "out"),
+         ("DBG2",       36, "out"),
+         ("DBG3",       37, "out"),
+         ("DBG4",       38, "out"),
+         ("DBG5",       40, "out"),
+
+         ("PIN2",	4, "in"),
          ("PIN3",	10, "in"),
          ("PIN4",	12, "in"),
          ("PIN5",	15, "in"),
@@ -66,8 +69,8 @@ if True:
          ("PIN9",	22, "in"),
          ("PIN10",	24, "in"),
          ("PIN11",	26, "in"),
-         ("PIN12",	59, "in"),
-         ("PIN13",	58, "in"),
+         ("PIN12",	63, "in"),
+         ("PIN13",	62, "in"),
          ("PIN15",	2,  "in"),
 
          ("PIN1",	3,  "out"),
@@ -75,14 +78,20 @@ if True:
          ("PIN16",	8,  "out"),
          ("PIN17",	9,  "out"),
 
-         ("OUT1",	57, "out"),
-         ("OUT2",	55, "out"),
-         ("OUT3",	54, "out"),
-         ("OUT4",	56, "out"),
+         ("OUT1",	57, "out"), # Ctl1Out
+         ("OUT2",	55, "out"), # Ctl2Out
+         ("OUT3",	54, "out"), # Ctl3Out
+         ("OUT4",	56, "out"), # Ctl4Out
 
-         ("SW12_V1",	41, "out"),
-         ("SW12_V2",	43, "out"),
+         ("SW12_V1",	41, "out"), # Switched 12v1
+         ("SW12_V2",	43, "out"), # Swithced 12v2
 
+         ("EXTCTL0",	52, "out"),
+         ("EXTCTL1",	53, "out"),
+         ("EXTCTL2",	50, "out"),
+         ("EXTCTL3",	51, "out"),
+
+         ("PWMSEL",	39, "out"), # PwmSel
       )
 else:
     defineMega = \

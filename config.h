@@ -62,41 +62,41 @@ extern void pinConfig();
 #define OC5C_Port PINL
 #define OC5C_Mask _BV(PL5)
 
-#define A_Pin 64
+#define A_Pin 68
 #define A_Port PORTK
 #define A_DDR DDRK
 #define A_In PINK
-#define A_Bit PK2
+#define A_Bit PK6
 #define A_Mask _BV(A_Bit)
 #define aRead() ((A_Port & A_Mask) != 0)
 #define aSet() A_Port |= A_Mask
 #define aClr() A_Port &= ~A_Mask
 
-#define B_Pin 65
+#define B_Pin 69
 #define B_Port PORTK
 #define B_DDR DDRK
 #define B_In PINK
-#define B_Bit PK3
+#define B_Bit PK7
 #define B_Mask _BV(B_Bit)
 #define bRead() ((B_Port & B_Mask) != 0)
 #define bSet() B_Port |= B_Mask
 #define bClr() B_Port &= ~B_Mask
 
-#define INDDX_Pin 66
-#define INDDX_Port PORTK
-#define INDDX_DDR DDRK
-#define INDDX_In PINK
-#define INDDX_Bit PK4
-#define INDDX_Mask _BV(INDDX_Bit)
-#define inddxRead() ((INDDX_Port & INDDX_Mask) != 0)
-#define inddxSet() INDDX_Port |= INDDX_Mask
-#define inddxClr() INDDX_Port &= ~INDDX_Mask
+#define INDEX_Pin 32
+#define INDEX_Port PORTC
+#define INDEX_DDR DDRC
+#define INDEX_In PINC
+#define INDEX_Bit PC5
+#define INDEX_Mask _BV(INDEX_Bit)
+#define indexRead() ((INDEX_Port & INDEX_Mask) != 0)
+#define indexSet() INDEX_Port |= INDEX_Mask
+#define indexClr() INDEX_Port &= ~INDEX_Mask
 
-#define SYNC_Pin 67
-#define SYNC_Port PORTK
-#define SYNC_DDR DDRK
-#define SYNC_In PINK
-#define SYNC_Bit PK5
+#define SYNC_Pin 33
+#define SYNC_Port PORTC
+#define SYNC_DDR DDRC
+#define SYNC_In PINC
+#define SYNC_Bit PC4
 #define SYNC_Mask _BV(SYNC_Bit)
 #define syncRead() ((SYNC_Port & SYNC_Mask) != 0)
 #define syncSet() SYNC_Port |= SYNC_Mask
@@ -234,51 +234,51 @@ extern void pinConfig();
 #define vfdRevSet() VFD_REV_Port |= VFD_REV_Mask
 #define vfdRevClr() VFD_REV_Port &= ~VFD_REV_Mask
 
-#define SP_ENA_Pin 60
-#define SP_ENA_Port PORTF
-#define SP_ENA_DDR DDRF
-#define SP_ENA_In PINF
-#define SP_ENA_Bit PF6
+#define SP_ENA_Pin 64
+#define SP_ENA_Port PORTK
+#define SP_ENA_DDR DDRK
+#define SP_ENA_In PINK
+#define SP_ENA_Bit PK2
 #define SP_ENA_Mask _BV(SP_ENA_Bit)
 #define spEnaRead() ((SP_ENA_Port & SP_ENA_Mask) != 0)
 #define spEnaSet() SP_ENA_Port |= SP_ENA_Mask
 #define spEnaClr() SP_ENA_Port &= ~SP_ENA_Mask
 
-#define E_STOP_PC_Pin 61
-#define E_STOP_PC_Port PORTF
-#define E_STOP_PC_DDR DDRF
-#define E_STOP_PC_In PINF
-#define E_STOP_PC_Bit PF7
+#define E_STOP_PC_Pin 65
+#define E_STOP_PC_Port PORTK
+#define E_STOP_PC_DDR DDRK
+#define E_STOP_PC_In PINK
+#define E_STOP_PC_Bit PK3
 #define E_STOP_PC_Mask _BV(E_STOP_PC_Bit)
 #define eStopPcRead() ((E_STOP_PC_Port & E_STOP_PC_Mask) != 0)
 #define eStopPcSet() E_STOP_PC_Port |= E_STOP_PC_Mask
 #define eStopPcClr() E_STOP_PC_Port &= ~E_STOP_PC_Mask
 
-#define E_STOP_RLY_Pin 62
+#define E_STOP_RLY_Pin 66
 #define E_STOP_RLY_Port PORTK
 #define E_STOP_RLY_DDR DDRK
 #define E_STOP_RLY_In PINK
-#define E_STOP_RLY_Bit PK0
+#define E_STOP_RLY_Bit PK4
 #define E_STOP_RLY_Mask _BV(E_STOP_RLY_Bit)
 #define eStopRlyRead() ((E_STOP_RLY_Port & E_STOP_RLY_Mask) != 0)
 #define eStopRlySet() E_STOP_RLY_Port |= E_STOP_RLY_Mask
 #define eStopRlyClr() E_STOP_RLY_Port &= ~E_STOP_RLY_Mask
 
-#define STEP_DIS_Pin 63
+#define STEP_DIS_Pin 67
 #define STEP_DIS_Port PORTK
 #define STEP_DIS_DDR DDRK
 #define STEP_DIS_In PINK
-#define STEP_DIS_Bit PK1
+#define STEP_DIS_Bit PK5
 #define STEP_DIS_Mask _BV(STEP_DIS_Bit)
 #define stepDisRead() ((STEP_DIS_Port & STEP_DIS_Mask) != 0)
 #define stepDisSet() STEP_DIS_Port |= STEP_DIS_Mask
 #define stepDisClr() STEP_DIS_Port &= ~STEP_DIS_Mask
 
-#define W_DOG_Pin 38
-#define W_DOG_Port PORTD
-#define W_DOG_DDR DDRD
-#define W_DOG_In PIND
-#define W_DOG_Bit PD7
+#define W_DOG_Pin 44
+#define W_DOG_Port PORTL
+#define W_DOG_DDR DDRL
+#define W_DOG_In PINL
+#define W_DOG_Bit PL5
 #define W_DOG_Mask _BV(W_DOG_Bit)
 #define wDogRead() ((W_DOG_Port & W_DOG_Mask) != 0)
 #define wDogSet() W_DOG_Port |= W_DOG_Mask
@@ -314,69 +314,69 @@ extern void pinConfig();
 #define t2Set() T2_Port |= T2_Mask
 #define t2Clr() T2_Port &= ~T2_Mask
 
-#define DBG0_Pin 32
+#define DBG0_Pin 34
 #define DBG0_Port PORTC
 #define DBG0_DDR DDRC
 #define DBG0_In PINC
-#define DBG0_Bit PC5
+#define DBG0_Bit PC3
 #define DBG0_Mask _BV(DBG0_Bit)
 #define dbg0Read() ((DBG0_Port & DBG0_Mask) != 0)
 #define dbg0Set() DBG0_Port |= DBG0_Mask
 #define dbg0Clr() DBG0_Port &= ~DBG0_Mask
 
-#define DBG1_Pin 33
+#define DBG1_Pin 35
 #define DBG1_Port PORTC
 #define DBG1_DDR DDRC
 #define DBG1_In PINC
-#define DBG1_Bit PC4
+#define DBG1_Bit PC2
 #define DBG1_Mask _BV(DBG1_Bit)
 #define dbg1Read() ((DBG1_Port & DBG1_Mask) != 0)
 #define dbg1Set() DBG1_Port |= DBG1_Mask
 #define dbg1Clr() DBG1_Port &= ~DBG1_Mask
 
-#define DBG2_Pin 34
+#define DBG2_Pin 36
 #define DBG2_Port PORTC
 #define DBG2_DDR DDRC
 #define DBG2_In PINC
-#define DBG2_Bit PC3
+#define DBG2_Bit PC1
 #define DBG2_Mask _BV(DBG2_Bit)
 #define dbg2Read() ((DBG2_Port & DBG2_Mask) != 0)
 #define dbg2Set() DBG2_Port |= DBG2_Mask
 #define dbg2Clr() DBG2_Port &= ~DBG2_Mask
 
-#define DBG3_Pin 35
+#define DBG3_Pin 37
 #define DBG3_Port PORTC
 #define DBG3_DDR DDRC
 #define DBG3_In PINC
-#define DBG3_Bit PC2
+#define DBG3_Bit PC0
 #define DBG3_Mask _BV(DBG3_Bit)
 #define dbg3Read() ((DBG3_Port & DBG3_Mask) != 0)
 #define dbg3Set() DBG3_Port |= DBG3_Mask
 #define dbg3Clr() DBG3_Port &= ~DBG3_Mask
 
-#define DBG4_Pin 36
-#define DBG4_Port PORTC
-#define DBG4_DDR DDRC
-#define DBG4_In PINC
-#define DBG4_Bit PC1
+#define DBG4_Pin 38
+#define DBG4_Port PORTD
+#define DBG4_DDR DDRD
+#define DBG4_In PIND
+#define DBG4_Bit PD7
 #define DBG4_Mask _BV(DBG4_Bit)
 #define dbg4Read() ((DBG4_Port & DBG4_Mask) != 0)
 #define dbg4Set() DBG4_Port |= DBG4_Mask
 #define dbg4Clr() DBG4_Port &= ~DBG4_Mask
 
-#define DBG5_Pin 37
-#define DBG5_Port PORTC
-#define DBG5_DDR DDRC
-#define DBG5_In PINC
-#define DBG5_Bit PC0
+#define DBG5_Pin 40
+#define DBG5_Port PORTG
+#define DBG5_DDR DDRG
+#define DBG5_In PING
+#define DBG5_Bit PG1
 #define DBG5_Mask _BV(DBG5_Bit)
 #define dbg5Read() ((DBG5_Port & DBG5_Mask) != 0)
 #define dbg5Set() DBG5_Port |= DBG5_Mask
 #define dbg5Clr() DBG5_Port &= ~DBG5_Mask
 
-#define PIN2_Pin 14
-#define PIN2_In PINJ
-#define PIN2_Bit PJ1
+#define PIN2_Pin 4
+#define PIN2_In PING
+#define PIN2_Bit PG5
 #define PIN2_Mask _BV(PIN2_Bit)
 #define pin2In() ((PIN2_In & PIN2_Mask) != 0)
 #define pin2Set() ((PIN2_In & PIN2_Mask) != 0)
@@ -454,17 +454,17 @@ extern void pinConfig();
 #define pin11Set() ((PIN11_In & PIN11_Mask) != 0)
 #define pin11Clr() ((PIN11_In & PIN11_Mask) == 0)
 
-#define PIN12_Pin 59
-#define PIN12_In PINF
-#define PIN12_Bit PF5
+#define PIN12_Pin 63
+#define PIN12_In PINK
+#define PIN12_Bit PK1
 #define PIN12_Mask _BV(PIN12_Bit)
 #define pin12In() ((PIN12_In & PIN12_Mask) != 0)
 #define pin12Set() ((PIN12_In & PIN12_Mask) != 0)
 #define pin12Clr() ((PIN12_In & PIN12_Mask) == 0)
 
-#define PIN13_Pin 58
-#define PIN13_In PINF
-#define PIN13_Bit PF4
+#define PIN13_Pin 62
+#define PIN13_In PINK
+#define PIN13_Bit PK0
 #define PIN13_Mask _BV(PIN13_Bit)
 #define pin13In() ((PIN13_In & PIN13_Mask) != 0)
 #define pin13Set() ((PIN13_In & PIN13_Mask) != 0)
@@ -577,6 +577,56 @@ extern void pinConfig();
 #define sw12V2Read() ((SW12_V2_Port & SW12_V2_Mask) != 0)
 #define sw12V2Set() SW12_V2_Port |= SW12_V2_Mask
 #define sw12V2Clr() SW12_V2_Port &= ~SW12_V2_Mask
+
+#define EXTCTL0_Pin 52
+#define EXTCTL0_Port PORTB
+#define EXTCTL0_DDR DDRB
+#define EXTCTL0_In PINB
+#define EXTCTL0_Bit PB1
+#define EXTCTL0_Mask _BV(EXTCTL0_Bit)
+#define extctl0Read() ((EXTCTL0_Port & EXTCTL0_Mask) != 0)
+#define extctl0Set() EXTCTL0_Port |= EXTCTL0_Mask
+#define extctl0Clr() EXTCTL0_Port &= ~EXTCTL0_Mask
+
+#define EXTCTL1_Pin 53
+#define EXTCTL1_Port PORTB
+#define EXTCTL1_DDR DDRB
+#define EXTCTL1_In PINB
+#define EXTCTL1_Bit PB0
+#define EXTCTL1_Mask _BV(EXTCTL1_Bit)
+#define extctl1Read() ((EXTCTL1_Port & EXTCTL1_Mask) != 0)
+#define extctl1Set() EXTCTL1_Port |= EXTCTL1_Mask
+#define extctl1Clr() EXTCTL1_Port &= ~EXTCTL1_Mask
+
+#define EXTCTL2_Pin 50
+#define EXTCTL2_Port PORTB
+#define EXTCTL2_DDR DDRB
+#define EXTCTL2_In PINB
+#define EXTCTL2_Bit PB3
+#define EXTCTL2_Mask _BV(EXTCTL2_Bit)
+#define extctl2Read() ((EXTCTL2_Port & EXTCTL2_Mask) != 0)
+#define extctl2Set() EXTCTL2_Port |= EXTCTL2_Mask
+#define extctl2Clr() EXTCTL2_Port &= ~EXTCTL2_Mask
+
+#define EXTCTL3_Pin 51
+#define EXTCTL3_Port PORTB
+#define EXTCTL3_DDR DDRB
+#define EXTCTL3_In PINB
+#define EXTCTL3_Bit PB2
+#define EXTCTL3_Mask _BV(EXTCTL3_Bit)
+#define extctl3Read() ((EXTCTL3_Port & EXTCTL3_Mask) != 0)
+#define extctl3Set() EXTCTL3_Port |= EXTCTL3_Mask
+#define extctl3Clr() EXTCTL3_Port &= ~EXTCTL3_Mask
+
+#define PWMSEL_Pin 39
+#define PWMSEL_Port PORTG
+#define PWMSEL_DDR DDRG
+#define PWMSEL_In PING
+#define PWMSEL_Bit PG2
+#define PWMSEL_Mask _BV(PWMSEL_Bit)
+#define pwmselRead() ((PWMSEL_Port & PWMSEL_Mask) != 0)
+#define pwmselSet() PWMSEL_Port |= PWMSEL_Mask
+#define pwmselClr() PWMSEL_Port &= ~PWMSEL_Mask
 
 #endif
 #ifdef ARDUINO_AVR_PROMICRO

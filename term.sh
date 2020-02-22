@@ -1,2 +1,2 @@
-/cygdrive/c/DevSoftware/Putty/putty.exe -load COM4-19200
+/cygdrive/c/Program\ Files/PuTTY/putty.exe -load COM9-19200
 

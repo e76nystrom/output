@@ -31,7 +31,8 @@ unsigned int dutyCycle3;
 unsigned int pwm3Counter;
 unsigned int isr3Counter;
 #endif
-#endif
+
+#endif /* TCC3RA */
 
 #if defined(TCCR4A) && !defined(TCCR4E)
 
@@ -42,7 +43,8 @@ unsigned int dutyCycle4;
 unsigned int isr4Counter;
 unsigned int pwm4Counter;
 #endif
-#endif
+
+#endif /* defined(TCCR4A) && !defined(TCCR4E) */
 
 void showTimer0();
 void showTimer(P_TIMER_CTL tmr);
@@ -120,8 +122,8 @@ void setup()
   }
  }
  newLine();
-#endif
-#endif
+#endif /* DEBUG && defined(AVR_PROMICRO16) */
+#endif /* CONSOLE */
 
  P_TIMER_CTL t = &tmr1;
  t->timer = (P_TMR) &TCCR1A;
@@ -144,12 +146,12 @@ void setup()
 
  initTimer3(period3);
  pwm1Timer3(dutyCycle3);
-#endif
+#endif /* SPINDLE_PWM_TEST */
 
 #if CONSOLE
  showTimer(&tmr3);
 #endif
-#endif
+#endif /*TCCR3A */
 
 #if defined(TCCR4A) && !defined(TCCR4E)
  t = &tmr4;
@@ -165,12 +167,12 @@ void setup()
 
  initTimer4(period4);		/* init charge pump */
  pwm1Timer4(dutyCycle4);	/* set duty cycle */
-#endif
+#endif /* CHARGE_PUMP_TEST */
 
 #if CONSOLE
  showTimer(&tmr4);
 #endif
-#endif
+#endif /* defined(TCCR4A) && !defined(TCCR4E) */
 
  pinConfig();
 
@@ -193,14 +195,14 @@ void setup()
 #if CONSOLE
  showTimer2();
 #endif
-#endif
+#endif /* TMR2_PWM_TIMER */
 
 #if TMR3_PWM_TIMER
  initTimer3();			/* init timer 3 pwm */
 #if CONSOLE
  showTimer(&tmr3);
 #endif
-#endif
+#endif /* TMR3_PWM_TIMER */
 
 #if INPUT_TEST
  spFwdTClr();			/* clear simulated inputs */
@@ -236,11 +238,11 @@ void loop()
    cmdLoop();
   }
  }
-#endif
+#endif /* CONSOLE */
 
 #if INPUT_LOOP
  inputLoop();
-#endif
+#endif /* INPUT_LOOP */
 
  procLoop();
 
@@ -254,7 +256,7 @@ void loop()
   else
    ledSet();
  }
-#endif
+#endif /* ledRead */
 }
 
 #if CONSOLE
@@ -275,7 +277,7 @@ void readTimer2()
  pwmTimerCount.lo = TCNT2;	// read low part
  TCCR2B = _BV(CS22);		// restart
 }
-#endif
+#endif /* TCCR2A */
 
 void cmdLoop()
 {
@@ -333,7 +335,8 @@ void cmdLoop()
 	   EICRA, EIMSK, EIFR);
 #endif
    }
-#if INPUT_TEST
+   
+#if INPUT_TEST			/* if testing inputs */
    else if (ch == 'e')		/* control e stop */
    {
     ch = query(F1("eStopNo [%d]: "), eStopNoIn());
@@ -381,7 +384,8 @@ void cmdLoop()
      spRevTClr();
     ctlStatus();
    }
-#endif
+#endif /* INPUT_TEST */
+
    else if (ch == 't')		/* control bits, inputs, and outputs */
    {
     ctlStatus();
@@ -391,6 +395,7 @@ void cmdLoop()
     printf(F0("cpActive %d cpInterrupts %u cpFail %u cpTime %u\n"),
 	   cpActive, cpInterrupts, cpFail, cpTime);
    }
+
 #if CP_DEBUG
    else if (ch == 'C')
    {
@@ -399,7 +404,8 @@ void cmdLoop()
     if (dbgCpEnable)
      cpTime = intMillis();
    }
-#endif
+#endif /* CP_DEBUG */
+
    else if (ch == '0')		/* timer 0 status */
    {
     showTimer0();
@@ -432,6 +438,7 @@ void cmdLoop()
     }
     showTimer(&tmr1);
    }
+
 #ifdef TCCR2A
    else if (ch == '2')		/* control timer 2 spindle pwm timer */
    {
@@ -453,11 +460,13 @@ void cmdLoop()
 	   isr2Counter, pwmTimerCount.w);
 #endif
    }
-#endif
+#endif /* TCCR2A */
+
 #ifdef TCCR3A
    else if (ch == '3')		/* control timer 3 spindle pwm test */
    {
-#if TMR3_PWM_TIMER == 0
+
+#if TMR3_PWM_TIMER == 0		/* if timer 3 not used for spindle pwm */
     ch = query(F1("init: "));
     if (ch == 'y')
     {
@@ -483,13 +492,15 @@ void cmdLoop()
       stopTimer3();
      }
     }
-#endif
+#endif /* TMR3_PWM_TIMER == 0 */
+    
     showTimer(&tmr3);
 #if DEBUG
     printf(F0("isrCounter %u pwmCounter %u\n"), isr3Counter, pwm3Counter);
 #endif
    }
-#endif
+#endif /* TCCR3A */
+
 #if defined(TCCR4A) && !defined(TCCR4E)
    else if (ch == '4')		/* control timer 4 charge pump test */
    {
@@ -523,7 +534,8 @@ void cmdLoop()
     printf(F0("isrCounter %u pwmCounter %u\n"), isr4Counter, pwm4Counter);
 #endif
    }
-#endif
+#endif /* defined(TCCR4A) && !defined(TCCR4E) */
+
    else if (ch == '?')
    {
 #ifdef PINA
@@ -554,6 +566,7 @@ void cmdLoop()
     showPort((P_PORT) &PINL, "L");
 #endif
    }
+
 #if INPUT_LOOP
    else if (ch == 's')
    {
@@ -596,7 +609,7 @@ void cmdLoop()
     printf("1 2 3 4\n");
     printf("%d %d %d %d\n", out1Read(), out2Read(), out3Read(), out4Read());
    }
-#endif
+#endif /* INPUT_LOOP */
   }
  }
 }
@@ -614,7 +627,7 @@ void ctlStatus()
 	spEnaRead(), vfdFwdRead(), vfdRevRead());
 }
 
-#endif
+#endif /* CONSOLE */
 
 #if INPUT_LOOP
 
@@ -675,7 +688,7 @@ void inputLoop()
 #endif
 }
 
-#endif
+#endif /* INPUT_LOOP */
 
 void procLoop()
 {
@@ -1065,6 +1078,8 @@ ISR(INT1_vect)
 
 #ifdef TCCR3A
 
+/* interrupt for spindle pwm test */
+
 ISR(TIMER3_COMPA_vect)
 {
 #if DEBUG
@@ -1079,9 +1094,11 @@ ISR(TIMER3_OVF_vect)
 #endif
 }
 
-#endif
+#endif /* TCCR3A */
 
 #if defined(TCCR4A) && !defined(TCCR4E)
+
+/* interrupt for charge pump test */
 
 ISR(TIMER4_OVF_vect)
 {
@@ -1097,7 +1114,7 @@ ISR(TIMER4_COMPA_vect)
 #endif
 }
 
-#endif
+#endif /* defined(TCCR4A) && !defined(TCCR4E) */
 
 uint16_t intMillis()
 {
@@ -1139,4 +1156,4 @@ void showPort(P_PORT port, const char *name)
 	name, port->port, port->ddr, port->pin);
 }
 
-#endif
+#endif /* CONSOLE */

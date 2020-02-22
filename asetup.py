@@ -1,10 +1,11 @@
-#!/cygdrive/c/Python27/Python.exe
+#!/cygdrive/c/Python37/Python.exe
 #!/cygdrive/c/DevSoftware/Python/Python36-32/Python.exe
 
 from sys import argv, stdout
 from os.path import dirname, isfile, realpath
 from os import getcwd
-from imp import load_source
+#from imp import load_source
+import importlib
 import os 
 
 debug = False
@@ -237,7 +238,9 @@ if not isfile(fName + ".py"):
     print("invalid file %s" % fName)
     exit()
 
-cfg = load_source("cfg", getcwd() + os.sep + fName + ".py")
+#cfg = load_source("cfg", getcwd() + os.sep + fName + ".py")
+#file = os.path.join(getcwd(), fName)# + ".py")
+cfg = importlib.__import__(fName)
 
 fName = cfg.outFile
 
@@ -257,7 +260,8 @@ for info in cfg.pinConfig:
 
     boardDef = info['def']
     boardSrc=  basePath + os.sep + boardDef + ".py"
-    board = load_source("board", boardSrc)
+    #board = load_source("board", boardSrc)
+    board = importlib.__import__(boardDef)
 
     c.readPins(board.digitalDef)
     c.readAlt(board.altDef)
