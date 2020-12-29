@@ -5,33 +5,33 @@ inputTest = False               # simulated inputs for testing
 if inputTest:
     inTest = "in, test"
 else:
-    inTest = "in"
+    inTest = "inpu"
 
 if True:
     defineMega = \
         (\
-         ("INPUT_LOOP", 1),     # enable input loop
+         ("INPUT_LOOP",       1), # enable input loop
          ("SPINDLE_PWM_TEST", 1), # spindle pwm test
          ("CHARGE_PUMP_TEST", 1), # charge pump pwm test
 
-         ("TMR2_PWM_TIMER", 1), # timer 2 is pwm timer
-         ("TMR3_PWM_TIMER", 0), # timer 3 is pwm timer
+         ("TMR2_PWM_TIMER",   1), # timer 2 is pwm timer
+         ("TMR3_PWM_TIMER",   0), # timer 3 is pwm timer
         )
 
     pinsMega = \
         (\
-         ("A",        68, "out"),
-         ("B",        69, "out"),
-         ("INDEX",    32, "out"),
-         ("SYNC",     33, "out"),
+         ("A",          68, "out"),
+         ("B",          69, "out"),
+         ("INDEX",      32, "out"),
+         ("SYNC",       33, "out"),
 
-         ("T1_PWM_A", 11, "out"), # FastPmw
+         ("T1_PWM_A",   11, "out"), # FastPmw
 
-         ("T3_PWM_A",  5, "out"), # spindle pwm simulator
-         ("T4_PWM_A",  6, "out"), # charge pump simulator
+         ("T3_PWM_A",    5, "out"), # spindle pwm simulator
+         ("T4_PWM_A",    6, "out"), # charge pump simulator
 
-         ("CHG_PUMP", 20, ("exti, rising")), # ChgPump
-         ("PWM",      21, ("exti, change")), # PWM
+         ("CHG_PUMP",   20, ("exti, rising")), # ChgPump
+         ("PWM",        21, ("exti, change")), # PWM
 
          ("SP_FWD",     23, inTest), # SpRwd
          ("SP_REV",     25, inTest), # SpRev
@@ -59,7 +59,7 @@ if True:
          ("DBG4",       38, "out"),
          ("DBG5",       40, "out"),
 
-         ("PIN2",	4, "in"),
+         ("PIN2",	4,  "in"),
          ("PIN3",	10, "in"),
          ("PIN4",	12, "in"),
          ("PIN5",	15, "in"),
@@ -71,12 +71,12 @@ if True:
          ("PIN11",	26, "in"),
          ("PIN12",	63, "in"),
          ("PIN13",	62, "in"),
-         ("PIN15",	2,  "in"),
+         ("PIN15",	 2, "in"),
 
-         ("PIN1",	3,  "out"),
-         ("PIN14",	7,  "out"),
-         ("PIN16",	8,  "out"),
-         ("PIN17",	9,  "out"),
+         ("PIN1",	 3, "out"),
+         ("PIN14",	 7, "out"),
+         ("PIN16",	 8, "out"),
+         ("PIN17",	 9, "out"),
 
          ("OUT1",	57, "out"), # Ctl1Out
          ("OUT2",	55, "out"), # Ctl2Out
@@ -99,8 +99,8 @@ else:
          ("SPINDLE_PWM_TEST", 1), \
          ("CHARGE_PUMP_TEST", 1), \
 
-         ("TMR2_PWM_TIMER", 1), \
-         ("TMR3_PWM_TIMER", 0), \
+         ("TMR2_PWM_TIMER",   1), \
+         ("TMR3_PWM_TIMER",   0), \
         )
 
     pinsMega = \

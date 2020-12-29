@@ -109,8 +109,11 @@ class config():
         h.write(("#define %sClr() %s &= ~%s\n" % \
                     (self.funcName, self.configPort, self.configMask)))
 
-    def inPin(self):
-        mode = "INPUT"
+    def inPin(self, pullup=False):
+        if pullup:
+            mode = "INPUT_PULLUP"
+        else:
+            mode = "INPUT"
         if 'test' in self.options:
             mode = "OUTPUT"
             self.portIn = self.portName
@@ -215,6 +218,8 @@ class config():
                 self.outPin()
             elif dir == "in":
                 self.inPin()
+            elif dir == "inpu":
+                self.inPin(True)
             elif dir == "exti":
                 self.inPin()
                 self.extiPin()
