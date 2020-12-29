@@ -219,6 +219,13 @@ void setup()
  pilotClr();			/* turn on pilot light */
 #endif
 
+#if INPUT_LOOP
+ out1Clr();
+ out2Clr();
+ out3Clr();
+ out4Clr();
+#endif
+
 #if CONSOLE
  puts(F0("C for command mode\n"));
  fflush(stdout);
@@ -285,6 +292,9 @@ void cmdLoop()
  while (1)
  {
   procLoop();
+#if INPUT_LOOP
+  inputLoop();
+#endif /* INPUT_LOOP */
   if (DBGPORT.available())
   {
    char ch = DBGPORT.read();
@@ -598,7 +608,12 @@ void cmdLoop()
     printf("portb %02x portc %02x portd %02x\n", PINB, PINC, PIND);
     printf("%03x\n", tmp);
     printf("13 12 11  9  8  7  6  5  4  3  2 15\n");
+#if 1
+    printf("xh x- x+ ** ** ** ** ** ** ** ** **\n");
+#endif
+#if 0
     printf("x+ ** x- pr y+ ** y- ** z+ ** z- **\n");
+#endif
     int mask = 1;
     for (int i = 0; i < 12; i++)
     {
@@ -650,6 +665,26 @@ void inputLoop()
 
 #if 1
 
+ if (pin12Set() || pin11Set())	// limits
+  out1Set();
+ else
+  out1Clr();
+
+ if (pin13Set())		// home
+  out2Set();
+ else
+  out2Clr();
+
+/*
+ if (pin2Clr()	|| pin4Clr())	// z axis
+  out3Set();
+ else
+  out3Clr();
+*/
+
+#endif
+#if 0
+
  if (pin13Clr() || pin11Clr())	// x axis
   out1Set();
  else
@@ -665,7 +700,8 @@ void inputLoop()
  else
   out3Clr();
 
-#else
+#endif
+#if 0
  
  if (pin11Clr() || pin6Clr() || pin4Clr()) // home
   out1Set();

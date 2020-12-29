@@ -1,6 +1,6 @@
 #!/cygdrive/c/Python37/Python.exe
 
-inputTest = True                # simulated inputs for testing
+inputTest = False               # simulated inputs for testing
 
 if inputTest:
     inTest = "in, test"
