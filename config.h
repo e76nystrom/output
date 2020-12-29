@@ -154,6 +154,16 @@ extern void pinConfig();
 	EICRA |= (_BV(ISC00)) << 0;\
 	EIMSK |= (_BV(INT0) << 0)
 
+#define PWM_SEL_Pin 39
+#define PWM_SEL_Port PORTG
+#define PWM_SEL_DDR DDRG
+#define PWM_SEL_In PING
+#define PWM_SEL_Bit PG2
+#define PWM_SEL_Mask _BV(PWM_SEL_Bit)
+#define pwmSelRead() ((PWM_SEL_Port & PWM_SEL_Mask) != 0)
+#define pwmSelSet() PWM_SEL_Port |= PWM_SEL_Mask
+#define pwmSelClr() PWM_SEL_Port &= ~PWM_SEL_Mask
+
 #define SP_FWD_Pin 23
 #define SP_FWD_In PINA
 #define SP_FWD_Bit PA1

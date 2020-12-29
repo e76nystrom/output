@@ -15,6 +15,7 @@ void pinConfig()
  pinMode(T4_PWM_A_Pin, OUTPUT);
  pinMode(CHG_PUMP_Pin, INPUT);
  pinMode(PWM_Pin, INPUT);
+ pinMode(PWM_SEL_Pin, OUTPUT);
  pinMode(SP_FWD_Pin, INPUT_PULLUP);
  pinMode(SP_REV_Pin, INPUT_PULLUP);
  pinMode(E_STOP_NO_Pin, INPUT_PULLUP);

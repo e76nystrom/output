@@ -32,6 +32,7 @@ if True:
 
          ("CHG_PUMP",   20, ("exti, rising")), # ChgPump
          ("PWM",        21, ("exti, change")), # PWM
+         ("PWM_SEL",    39, "out"), # pwm selector
 
          ("SP_FWD",     23, inTest), # SpRwd
          ("SP_REV",     25, inTest), # SpRev

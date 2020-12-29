@@ -178,6 +178,10 @@ void setup()
 
  dutyCycle1 = (1024 / 2) - 1;
  
+ #if defined(PWM_SEL_Pin)
+ pwmSelClr();			/* select fast pwm */
+ #endif
+ 
  eStopSet();			/* put in e stop condition */
 
  cpActive = 0;			/* set charge pump to inactive */
@@ -345,6 +349,16 @@ void cmdLoop()
 	   EICRA, EIMSK, EIFR);
 #endif
    }
+#if defined(PWM_SEL_Pin)
+   else if (ch == 'w')
+   {
+    ch = query(F1("pwmSel [%d]: "), pwmSelRead());
+    if (ch == '0')
+     pwmSelClr();
+    else if (ch == '1')
+     pwmSelSet();
+   }
+#endif
    
 #if INPUT_TEST			/* if testing inputs */
    else if (ch == 'e')		/* control e stop */
