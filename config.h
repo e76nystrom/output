@@ -174,9 +174,9 @@ extern void pinConfig();
 #define E_STOP_NO_In PINA
 #define E_STOP_NO_Bit PA7
 #define E_STOP_NO_Mask _BV(E_STOP_NO_Bit)
-#define eStopNoIn() ((E_STOP_NO_In & E_STOP_NO_Mask) != 0)
-#define eStopNoSet() ((E_STOP_NO_In & E_STOP_NO_Mask) != 0)
-#define eStopNoClr() ((E_STOP_NO_In & E_STOP_NO_Mask) == 0)
+#define eStopNoIn() ((E_STOP_NO_In & E_STOP_NO_Mask) == 0)
+#define eStopNoSet() ((E_STOP_NO_In & E_STOP_NO_Mask) == 0)
+#define eStopNoClr() ((E_STOP_NO_In & E_STOP_NO_Mask) != 0)
 
 #define E_STOP_NC_Pin 31
 #define E_STOP_NC_In PINC
@@ -190,9 +190,9 @@ extern void pinConfig();
 #define E_STOP_RST_In PINA
 #define E_STOP_RST_Bit PA5
 #define E_STOP_RST_Mask _BV(E_STOP_RST_Bit)
-#define eStopRstIn() ((E_STOP_RST_In & E_STOP_RST_Mask) == 0)
-#define eStopRstSet() ((E_STOP_RST_In & E_STOP_RST_Mask) == 0)
-#define eStopRstClr() ((E_STOP_RST_In & E_STOP_RST_Mask) != 0)
+#define eStopRstIn() ((E_STOP_RST_In & E_STOP_RST_Mask) != 0)
+#define eStopRstSet() ((E_STOP_RST_In & E_STOP_RST_Mask) != 0)
+#define eStopRstClr() ((E_STOP_RST_In & E_STOP_RST_Mask) == 0)
 
 #define FAST_PWM_Pin 11
 #define FAST_PWM_Port PORTB

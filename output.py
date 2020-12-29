@@ -1,4 +1,4 @@
-#!/cygdrive/c/Python37/Python.exe
+#!/cygdrive/c/Python37/Python.exe1
 
 inputTest = False               # simulated inputs for testing
 
@@ -35,9 +35,10 @@ if True:
 
          ("SP_FWD",     23, inTest), # SpRwd
          ("SP_REV",     25, inTest), # SpRev
-         ("E_STOP_NO",  29, inTest), # ESNO
+         ("E_STOP_NO",  29, inTest + ", low"), # ESNO
          ("E_STOP_NC",  31, inTest), # ESNC
-         ("E_STOP_RST", 27, inTest + ", low"), # EStop Reset
+#         ("E_STOP_RST", 27, inTest + ", low"), # EStop Reset
+         ("E_STOP_RST", 27, inTest), # EStop Reset         
 
          ("FAST_PWM",   11, "out"), # FastPwm
          ("VFD_FWD",    28, "out"), # FwdIn
