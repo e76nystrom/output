@@ -16,13 +16,13 @@
 unsigned int dutyCycle1;
 T_TIMER_CTL tmr1;
 
-#ifdef TCCR2A
+#if defined(TCCR2A)
 #if DEBUG
 unsigned int isr2Counter;
 #endif
 #endif
 
-#ifdef TCCR3A
+#if defined(TCCR3A)
 
 T_TIMER_CTL tmr3;
 long int period3;
@@ -132,7 +132,7 @@ void setup()
  t->aPort = (P_PORT) &OC1A_Port;
  t->aMask = OC1A_Mask;
 
-#ifdef TCCR3A
+#if defined(TCCR3A)
  t = &tmr3;
  t->timer = (P_TMR) &TCCR3A;
  t->timsk = (uint8_t *) &TIMSK3;
@@ -219,7 +219,7 @@ void setup()
  wDogClr();			/* clear watchdog output */
  stopAll();			/* stop everything */
  eStopSet();			/* start in e stop mode */
-#ifdef PILOT_PIN
+#if defined(PILOT_PIN)
  pilotClr();			/* turn on pilot light */
 #endif
 
@@ -272,7 +272,7 @@ void loop()
 
 #if CONSOLE
 
-#ifdef TCCR2A
+#if defined(TCCR2A)
 void clrTimer2()
 {
  TCCR2B = 0;			// stop timer
@@ -341,7 +341,7 @@ void cmdLoop()
     {
      pwmIntInit();		/* init pwm interrupt */
     }
-#ifdef EICRB
+#if defined(EICRB)
     printf(F0("EICRA %02x EICRB %02X EIMSK %02x EIFR %02x\n"),
 	   EICRA, EICRB, EIMSK, EIFR);
 #else
@@ -349,6 +349,7 @@ void cmdLoop()
 	   EICRA, EIMSK, EIFR);
 #endif
    }
+
 #if defined(PWM_SEL_Pin)
    else if (ch == 'w')
    {
@@ -358,7 +359,7 @@ void cmdLoop()
     else if (ch == '1')
      pwmSelSet();
    }
-#endif
+#endif	/* PWM_SEL_Pin */
    
 #if INPUT_TEST			/* if testing inputs */
    else if (ch == 'e')		/* control e stop */
@@ -463,7 +464,7 @@ void cmdLoop()
     showTimer(&tmr1);
    }
 
-#ifdef TCCR2A
+#if defined(TCCR2A)
    else if (ch == '2')		/* control timer 2 spindle pwm timer */
    {
     ch = query(F1("init: "));
@@ -486,7 +487,7 @@ void cmdLoop()
    }
 #endif /* TCCR2A */
 
-#ifdef TCCR3A
+#if defined(TCCR3A)
    else if (ch == '3')		/* control timer 3 spindle pwm test */
    {
 
@@ -562,31 +563,31 @@ void cmdLoop()
 
    else if (ch == '?')
    {
-#ifdef PINA
+#if defined(PINA)
     showPort((P_PORT) &PINA, "A");
 #endif
     showPort((P_PORT) &PINB, "B");
     showPort((P_PORT) &PINC, "C");
     showPort((P_PORT) &PIND, "D");
-#ifdef PINE
+#if defined(PINE)
     showPort((P_PORT) &PINE, "E");
 #endif
-#ifdef PINF
+#if defined(PINF)
     showPort((P_PORT) &PINF, "F");
 #endif
-#ifdef PING
+#if defined(PING)
     showPort((P_PORT) &PING, "G");
 #endif
-#ifdef PINH
+#if defined(PINH)
     showPort((P_PORT) &PINH, "H");
 #endif
-#ifdef PINJ
+#if defined(PINJ)
     showPort((P_PORT) &PINJ, "J");
 #endif
-#ifdef PINK
+#if defined(PINK)
     showPort((P_PORT) &PINK, "K");
 #endif
-#ifdef PINL
+#if defined(PINL)
     showPort((P_PORT) &PINL, "L");
 #endif
    }
@@ -1126,7 +1127,7 @@ ISR(INT1_vect)
  cpInterrupts++;
 }
 
-#ifdef TCCR3A
+#if defined(TCCR3A)
 
 /* interrupt for spindle pwm test */
 
