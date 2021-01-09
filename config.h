@@ -628,16 +628,6 @@ extern void pinConfig();
 #define extctl3Set() EXTCTL3_Port |= EXTCTL3_Mask
 #define extctl3Clr() EXTCTL3_Port &= ~EXTCTL3_Mask
 
-#define PWMSEL_Pin 39
-#define PWMSEL_Port PORTG
-#define PWMSEL_DDR DDRG
-#define PWMSEL_In PING
-#define PWMSEL_Bit PG2
-#define PWMSEL_Mask _BV(PWMSEL_Bit)
-#define pwmselRead() ((PWMSEL_Port & PWMSEL_Mask) != 0)
-#define pwmselSet() PWMSEL_Port |= PWMSEL_Mask
-#define pwmselClr() PWMSEL_Port &= ~PWMSEL_Mask
-
 #endif
 #ifdef ARDUINO_AVR_PROMICRO
 

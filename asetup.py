@@ -92,6 +92,7 @@ class config():
             h.write(("#define %sClr()\n" % \
                         (self.funcName)))
             return
+
         if debug:
             self.cpp.write(" puts(F(\"%-10s %2d %s out\\n\"));\n" % \
                            (self.name, self.pin, self.port));
@@ -102,24 +103,30 @@ class config():
         h.write("#define %s %s\n" % (self.configIn, self.portIn))
         h.write("#define %s_Bit %s\n" % (self.name, self.port))
         h.write("#define %s %s\n" % (self.configMask, self.portMask))
-        h.write(("#define %sRead() ((%s & %s) != 0)\n" % \
-                 (self.funcName, self.configPort, self.configMask)))
-        h.write(("#define %sSet() %s |= %s\n" % \
-                    (self.funcName, self.configPort, self.configMask)))
-        h.write(("#define %sClr() %s &= ~%s\n" % \
-                    (self.funcName, self.configPort, self.configMask)))
+
+        (t0, t1, t2) = ('=', '&= ~', '|= ') if 'low' in self.options else \
+            ('!', '|= ', '&= ~')
+        # print(self.configPin, self.options, t0, t1, t2)
+
+        h.write(("#define %sRead() ((%s & %s) %s= 0)\n" % \
+                 (self.funcName, self.configPort, self.configMask, t0)))
+        h.write(("#define %sSet() %s %s%s\n" % \
+                    (self.funcName, self.configPort, t1, self.configMask)))
+        h.write(("#define %sClr() %s %s%s\n" % \
+                    (self.funcName, self.configPort, t2, self.configMask)))
 
     def inPin(self, pullup=False):
         if pullup:
             mode = "INPUT_PULLUP"
         else:
             mode = "INPUT"
+
         if 'test' in self.options:
             mode = "OUTPUT"
             self.portIn = self.portName
-        high = True
-        if 'low' in self.options:
-            high = False
+
+        high = not ('low' in self.options)
+
         if debug:
             self.cpp.write(" puts(F(\"%-10s %2d %s in\\n\"));\n" % \
                       (self.name, self.pin, self.port));
@@ -175,13 +182,13 @@ class config():
         used = {}
         for i in range(len(config)):
             data = config[i]
-            (name, pin, dir) = data
-            tmp = dir.split(",")
+            (name, pin, direction) = data
+            tmp = direction.split(",")
             self.option = None
             if len(tmp) > 1:
-                dir = str(tmp[0])
+                direction = str(tmp[0])
                 self.option = tmp[1:]
-                dir = dir.strip()
+                direction = direction.strip()
 
             self.options = {}
             if self.option != None:
@@ -191,11 +198,11 @@ class config():
             if pin in self.pins:
                 if pin in used:
                     (first, firstDir) = used[pin]
-                    if firstDir != dir:
+                    if firstDir != direction:
                         print ("%s pin %d already used for %s" % \
                                (name, pin, first))
                 else:
-                    used[pin] = (name, dir)
+                    used[pin] = (name, direction)
 
             self.funcName = self.varName(name)
             if pin in self.pins:
@@ -214,13 +221,13 @@ class config():
 
             self.pin = pin
             self.name = name
-            if dir == "out":
+            if direction == "out":
                 self.outPin()
-            elif dir == "in":
+            elif direction == "in":
                 self.inPin()
-            elif dir == "inpu":
+            elif direction == "inpu":
                 self.inPin(True)
-            elif dir == "exti":
+            elif direction == "exti":
                 self.inPin()
                 self.extiPin()
             self.h.write("\n")

@@ -95,6 +95,7 @@ char dbgCpEnable;
 void cmdLoop();			/* command loop */
 #endif
 void ctlStatus();		/* control status */
+void outStatus();
 
 void setup()
 {
@@ -328,6 +329,87 @@ void cmdLoop()
      }
      newLine();
     }
+   }
+   else if (ch == 'o')
+   {
+    ch = query(F1(
+#if defined(SP_ENA0_Pin)
+		"0 - nspEna0"
+#endif
+#if defined(SP_ENA0_Pin)
+		"\n1 - nspEna1"
+#endif
+#if defined(SP_ENA_Pin)
+		"0 - spEna"
+#endif
+#if defined(SW12_V1_Pin)
+		"\n2 - sw12V1"
+#endif
+#if defined(SW12_V1_Pin)
+		"\n3 - sw12v2"
+#endif
+#if defined(STEP_DIS_Pin)
+		"\n4 - stepDis"
+#endif
+		": "));
+    switch (ch)
+    {
+    case '0':
+#if defined(SP_ENA0_Pin)
+     ch = query(F1("spEna0 [%d]: "), spEna0Read());
+     if (ch == '0')
+      spEna0Clr();
+     else if (ch == '1')
+      spEna0Set();
+#endif
+#if defined(SP_ENA_Pin)
+     ch = query(F1("spEna [%d]: "), spEnaRead());
+     if (ch == '0')
+      spEnaClr();
+     else if (ch == '1')
+      spEnaSet();
+#endif
+     break;
+
+#if defined(SP_ENA1_Pin)
+    case '1':
+      spEna1Clr();
+     else if (ch == '1')
+      spEna1Set();
+#endif
+     break;
+     
+    case '2':
+#if defined(SW12_V1_Pin)
+     ch = query(F1("sw12V1 [%d]: "), sw12V1Read());
+     if (ch == '0')
+      sw12V1Clr();
+     else if (ch == '1')
+      sw12V1Set();
+#endif
+     break;
+
+    case '3':
+#if defined(SW12_V2_Pin)
+     ch = query(F1("sw12V2 [%d]: "), sw12V2Read());
+     if (ch == '0')
+      sw12V2Clr();
+     else if (ch == '1')
+      sw12V2Set();
+#endif
+     break;
+
+    case '4':
+#if defined(STEP_DIS_Pin)
+     ch = query(F1("stepDis [%d]: "), stepDisRead());
+     if (ch == '0')
+      stepDisClr();
+     else if (ch == '1')
+      stepDisSet();
+#endif
+     break;
+    }     
+    outStatus();
    }
    else if (ch == 'i')		/* enable interrupts */
    {
@@ -655,6 +737,27 @@ void ctlStatus()
  printf(F0("eStopRly %d eStopPc %d stepDis %d spEna %d vfdFwd %d vfdRev %d\n"),
 	eStopRlyRead(), eStopPcRead(), stepDisRead(),
 	spEnaRead(), vfdFwdRead(), vfdRevRead());
+ outStatus();
+}
+
+void outStatus()
+{
+#if defined(SP_ENA_Pin)
+ printf(F0("spEna %d "), spEnaRead());
+#endif
+#if defined(SP_ENA1_Pin)
+ printf(F0("spEna1 %d "), spEna1Read());
+#endif
+#if defined(SP_ENA2_Pin)
+ printf(F0("spEna2 %d "), spEna2Read());
+#endif
+#if defined(SW12_V1_Pin)
+ printf(F0("sw12V1 %d "), sw12V1Read());
+#endif
+#if defined(SW12_V2_Pin)
+ printf(F0("sw12V2 %d "), sw12V2Read());
+#endif
+ newLine();
 }
 
 #endif /* CONSOLE */
@@ -1004,9 +1107,23 @@ void eStopClr()
 void stopAll()
 {
  stepDisClr();			/* disable stepper motors */
- spEnaClr();			/* stop spindle */
  vfdFwdClr();			/* stop vfd forward */
  vfdRevClr();			/* and reverse */
+#if defined(SP_ENA_Pin)
+ spEnaClr();			/* stop spindle */
+#endif
+#if defined(SP_ENA1_Pin)
+ spEna1Clr();			/* stop spindle */
+#endif
+#if defined(SP_ENA2_Pin)
+ spEna2Clr();			/* stop spindle */
+#endif
+#if defined(SW12_V1_Pin)
+ sw12V1Clr();
+#endif
+#if defined(SW12_V2_Pin)
+ sw12V2Clr();
+#endif
 }
 
 ISR(TIMER1_OVF_vect)

@@ -1,6 +1,6 @@
 #!/cygdrive/c/Python37/Python.exe1
 
-inputTest = True               # simulated inputs for testing
+inputTest = False               # simulated inputs for testing
 
 if inputTest:
     inTest = "in, test"
@@ -25,6 +25,11 @@ if True:
          ("INDEX",      32, "out"),
          ("SYNC",       33, "out"),
 
+         # ("A",          32, "out"),
+         # ("B",          33, "out"),
+         # ("INDEX",      34, "out"),
+         # ("SYNC",       35, "out"),
+
          ("T1_PWM_A",   11, "out"), # FastPmw
 
          ("T3_PWM_A",    5, "out"), # spindle pwm simulator
@@ -38,16 +43,24 @@ if True:
          ("SP_REV",     25, inTest), # SpRev
          ("E_STOP_NO",  29, inTest + ", low"), # ESNO
          ("E_STOP_NC",  31, inTest), # ESNC
-#         ("E_STOP_RST", 27, inTest + ", low"), # EStop Reset
+         # ("E_STOP_RST", 27, inTest + ", low"), # EStop Reset
          ("E_STOP_RST", 27, inTest), # EStop Reset         
 
          ("FAST_PWM",   11, "out"), # FastPwm
          ("VFD_FWD",    28, "out"), # FwdIn
          ("VFD_REV",    30, "out"), # RevIn
+
          ("SP_ENA",     64, "out"), # ProcSpindleRelay
          ("E_STOP_PC",  65, "out"), # ProcEStopSig
          ("E_STOP_RLY", 66, "out"), # ProcEStopRelay
          ("STEP_DIS",   67, "out"), # ProcStepDisable
+
+         # ("SP_ENA1",    64, "out"), # ProcSpdlRly1
+         # ("E_STOP_PC",  65, "out"), # ProcEStopSig
+         # ("E_STOP_RLY", 66, "out"), # ProcEStopRelay
+         # ("SP_ENA2",    67, "out"), # ProcSpdlRly2
+         # ("STEP_DIS",   68, "out"), # ProcStepDisable
+
          ("W_DOG",      44, "out"), # WD
          ("PILOT",      46, "out"), # Pilot
 
@@ -92,8 +105,6 @@ if True:
          ("EXTCTL1",	53, "out"),
          ("EXTCTL2",	50, "out"),
          ("EXTCTL3",	51, "out"),
-
-         ("PWMSEL",	39, "out"), # PwmSel
       )
 else:
     defineMega = \

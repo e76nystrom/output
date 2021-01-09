@@ -65,7 +65,6 @@ void pinConfig()
  pinMode(EXTCTL1_Pin, OUTPUT);
  pinMode(EXTCTL2_Pin, OUTPUT);
  pinMode(EXTCTL3_Pin, OUTPUT);
- pinMode(PWMSEL_Pin, OUTPUT);
 
 #endif
 
