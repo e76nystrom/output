@@ -132,7 +132,7 @@ else:
 
          ("SP_FWD",     54, inTest),
          ("SP_REV",     55, inTest),
-         ("E_STOP_NO",  56, inTest),
+         ("E_STOP_NO",  56, inTest + ", low"),
          ("E_STOP_NC",  57, inTest),
          ("E_STOP_RST", 58, inTest + ", low"),
 
@@ -170,7 +170,7 @@ pinsMini = \
 
  ("SP_FWD",      4, inTest),
  ("SP_REV",      5, inTest),
- ("E_STOP_NO",  18, inTest),
+ ("E_STOP_NO",  18, inTest + ", low"),
  ("E_STOP_NC",  19, inTest),
  ("E_STOP_RST",  8, inTest + ", low"),
 
@@ -209,9 +209,9 @@ pinsMicro = \
 
  ("SP_FWD",      4, inTest),
  ("SP_REV",      5, inTest),
+ ("E_STOP_NO",  14, inTest + ", low"),
  ("E_STOP_NC",  15, inTest),
- ("E_STOP_NO",  14, inTest),
- ("E_STOP_RST",  6, inTest + ", low"),
+ ("E_STOP_RST",  6, inTest),
 
  ("FAST_PWM",    9, "out"),
  ("VFD_FWD",     7, "out"),

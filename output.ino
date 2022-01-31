@@ -730,8 +730,12 @@ void ctlStatus()
 {
  procLoop();			/* run loop in case an input changed */
 
- printf(F0("eStopNo %d eStopNc %d eStopRst %d spFwd %d spRev %d\n"),
-	eStopNoIn(), eStopNcIn(), eStopRstIn(), spFwdIn(), spRevIn());
+ printf(F0("eStopNoIn %d eStopNcIn %d eStopNoSet %d eStopNcSet %d\n"),
+	eStopNoIn(), eStopNcIn(), eStopNoSet(), eStopNcSet());
+ printf(F0("eStopRstIn %d eStopRstSet %d\n"),
+	eStopRstIn(), eStopRstSet());
+ printf(F0("spFwdIn %d spRevIn %d spFwdSet %d spRevSet %d\n"),
+	spFwdIn(), spRevIn(), spFwdSet(), spRevSet());
  printf(F0("eStop %d wdEna %d cpActive %d\n"),
 	eStop, wdEna, cpActive);
  printf(F0("eStopRly %d eStopPc %d stepDis %d spEna %d vfdFwd %d vfdRev %d\n"),
@@ -925,11 +929,11 @@ void procChargePump()
 
 void procEStop()
 {
- if (eStopNoIn() || eStopNcIn()) /* if either e stop condition */
+ if (eStopNoSet() || eStopNcSet()) /* if either e stop condition */
   eStopSet();			/* set e stop condition */
  else				/* if e stop button released */
  {
-  if (eStopRstIn())		/* if estop reset */
+  if (eStopRstSet())		/* if estop reset */
   {
    if (eStop)			/* if in e stop state */
    {
@@ -1007,9 +1011,9 @@ void procPWM()
 
 void procSpindle()
 {
- if (spFwdIn())			/* if forward */
+ if (spFwdSet())		/* if forward */
  {
-  if (!spRevIn())		/* if reverse not set */
+  if (!spRevSet())		/* if reverse not set */
   {
    if (vfdRevRead())		/* if reverse set */
    {

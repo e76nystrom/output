@@ -96,8 +96,8 @@ void pinConfig()
  pinMode(PWM_Pin, INPUT);
  pinMode(SP_FWD_Pin, INPUT_PULLUP);
  pinMode(SP_REV_Pin, INPUT_PULLUP);
- pinMode(E_STOP_NC_Pin, INPUT_PULLUP);
  pinMode(E_STOP_NO_Pin, INPUT_PULLUP);
+ pinMode(E_STOP_NC_Pin, INPUT_PULLUP);
  pinMode(E_STOP_RST_Pin, INPUT_PULLUP);
  pinMode(FAST_PWM_Pin, OUTPUT);
  pinMode(VFD_FWD_Pin, OUTPUT);
@@ -119,8 +119,8 @@ void pinConfig()
  pinMode(PWM_Pin, INPUT);
  pinMode(SP_FWD_Pin, INPUT_PULLUP);
  pinMode(SP_REV_Pin, INPUT_PULLUP);
- pinMode(E_STOP_NC_Pin, INPUT_PULLUP);
  pinMode(E_STOP_NO_Pin, INPUT_PULLUP);
+ pinMode(E_STOP_NC_Pin, INPUT_PULLUP);
  pinMode(E_STOP_RST_Pin, INPUT_PULLUP);
  pinMode(FAST_PWM_Pin, OUTPUT);
  pinMode(VFD_FWD_Pin, OUTPUT);

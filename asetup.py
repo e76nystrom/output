@@ -136,9 +136,9 @@ class config():
         h.write("#define %s %s\n" % (self.configIn, self.portIn))
         h.write("#define %s_Bit %s\n" % (self.name, self.port))
         h.write("#define %s_Mask %s\n" % (self.name, self.portMask))
-        h.write("#define %sIn() ((%s & %s) %s= 0)\n" % \
-                (self.funcName, self.configIn, self.configMask,
-                 ('=', '!')[high]))
+        h.write("#define %sIn() ((%s & %s) != 0)\n" % \
+                (self.funcName, self.configIn, self.configMask))
+
 
         h.write("#define %sSet() ((%s & %s) %s= 0)\n" % \
                 (self.funcName, self.configIn, self.configMask,
