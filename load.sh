@@ -5,12 +5,12 @@ serial=1
 avrisp=0
 if [ -z $1 ]
 then
- port="COM7"
+ port="COM20"
 else
  port=$1
 fi
 
-TARGET=".pio/build/megaatmega2560/firmware.hex:i"
+TARGET=".pio/build/promega/firmware.hex:i"
 echo $TARGET
 
 AVRDUDE="/cygdrive/c/Users/Eric/.platformio/packages/tool-avrdude/avrdude"

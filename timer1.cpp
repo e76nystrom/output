@@ -11,6 +11,7 @@
 
 EXTC void initTimer1(unsigned int val);
 EXTC void stopTimer1();
+EXTC int timer1DutyCyc;
 
 #define TMR1_PWM_MAX 1024
 
@@ -20,6 +21,7 @@ void initTimer1(unsigned int dutyCycle)
 {
  // printf("initTimer1 dutyCycle %d\n", val);
  // set pin b5 to an output
+ timer1DutyCyc = dutyCycle;
  T1_PWM_A_DDR |= T1_PWM_A_Mask;
  if (dutyCycle == 0)
  {

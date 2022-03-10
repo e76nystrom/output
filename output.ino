@@ -7,6 +7,7 @@
 #include "timer2.h"
 #include "timer3.h"
 #include "timer4.h"
+#include "ctlstates.h"
 
 #define RESET_DEBOUNCE_TIME 20
 #define PWM_INACTIVITY_TIME 500
@@ -97,13 +98,24 @@ void cmdLoop();			/* command loop */
 void ctlStatus();		/* control status */
 void outStatus();
 
+#define AVR_PROMICRO16
+
+#if defined(AVR_PROMICRO16)
+
+#define REMPORT Serial1
+
+#define REM_IDLE 0
+#define REM_DATA 1
+
+#endif /* defined(AVR_PROMICRO16) */
+
 void setup()
 {
 #if CONSOLE
  initSerial(19200);
  puts(F0("\nstarting 0\n"));
 
-#if DEBUG && defined(AVR_PROMICRO16)
+#if 0 && DEBUG && defined(AVR_PROMICRO16)
  char delay = 10;
  uint16_t t0 = 0;
  while (1)
@@ -125,6 +137,12 @@ void setup()
  newLine();
 #endif /* DEBUG && defined(AVR_PROMICRO16) */
 #endif /* CONSOLE */
+
+#if defined(AVR_PROMICRO16)
+ puts(F0("\nstarting 1 19200\n"));
+ REMPORT.begin(19200);
+ REMPORT.println("remport 1");
+#endif /* defined(AVR_PROMICRO16) */
 
  P_TIMER_CTL t = &tmr1;
  t->timer = (P_TMR) &TCCR1A;
@@ -237,6 +255,30 @@ void setup()
 #endif
 }
 
+#if defined(AVR_PROMICRO16)
+
+#define REM_SIZE 40
+
+typedef struct sRemData
+{
+ char state;
+ int count;
+ int fil;
+ int emp;
+ char buf[REM_SIZE];
+} T_REMDATA, *P_REMDATA;
+
+T_REMDATA rem;
+
+void remCheck(void);
+void procRem(void);
+int getHexRem(void);
+int valRem;
+
+#define REM_PRM 1
+
+#endif	/* AVR_PROMICRO16 */
+
 void loop()
 {
 #if CONSOLE
@@ -251,6 +293,10 @@ void loop()
   }
  }
 #endif /* CONSOLE */
+
+#if defined(AVR_PROMICRO16)
+ remCheck();
+#endif	/* AVR_PROMICRO16 */
 
 #if INPUT_LOOP
  inputLoop();
@@ -300,6 +346,9 @@ void cmdLoop()
 #if INPUT_LOOP
   inputLoop();
 #endif /* INPUT_LOOP */
+#if defined(AVR_PROMICRO16)
+  remCheck();
+#endif	/* AVR_PROMICRO16 */
   if (DBGPORT.available())
   {
    char ch = DBGPORT.read();
@@ -1329,3 +1378,239 @@ void showPort(P_PORT port, const char *name)
 }
 
 #endif /* CONSOLE */
+
+#if defined(AVR_PROMICRO16)
+
+inline void putRem(char ch)
+{
+ REMPORT.write(ch);
+}
+
+void remCheck(void)
+{
+ while (REMPORT.available())
+ {
+  char ch = REMPORT.read();
+  // DBGPORT.println((int) ch);
+  char save = 0;
+  switch (rem.state)
+  {
+  case REM_IDLE:
+   if (ch == 1)
+   {
+    putRem('-');
+    save = 1;
+    rem.state = REM_DATA;
+   }
+   break;
+
+  case REM_DATA:
+   save = 1;
+   if (ch == '\r')
+   {
+    rem.state = REM_IDLE;
+   }
+   else
+   {
+    putRem(ch);
+   }
+  break;
+  }
+
+  if (save)
+  {
+   rem.count += 1;
+   int fil = rem.fil;
+   rem.buf[fil] = ch;
+   fil += 1;
+   if (fil >= REM_SIZE)
+    fil = 0;
+   rem.fil = fil;
+  }
+  
+  if (ch == '\r')
+  {
+   procRem();
+   putRem('*');
+  }
+ }
+}
+
+int getRem()
+{
+ int ch = -1;
+ if (rem.count > 0)
+ {
+  rem.count -= 1;
+  int emp = rem.emp;
+  ch = rem.buf[emp];
+  emp += 1;
+  if (emp >= REM_SIZE)
+   emp = 0;
+  rem.emp = emp;
+//  printf("getRem count %2d emp %2d fil %2d ch x%02x\n",
+//	 rem.count, rem.emp, rem.fil, ch);
+ }
+ return(ch);
+}
+
+int getHexRem(void)
+{
+ char ch;
+ char count;
+
+ valRem = 0;
+ count = 0;
+ while (count <= 8)
+ {
+  int tmp = getRem();
+  // printf("count %d %2x %c\n", count, tmp, tmp);
+  if (tmp > 0)
+  {
+   ch = (char) tmp;
+   if ((ch >= '0')
+   &&  (ch <= '9'))
+   {
+    ch -= '0';
+    count++;
+   }
+   else if ((ch >= 'a')
+   &&       (ch <= 'f'))
+   {
+    ch -= 'a' - 10;
+    count++;
+   }
+   else if (ch == ' ')
+   {
+    break;
+   }
+   else if (ch == '\r')
+    break;
+   else
+    continue;
+   valRem <<= 4;
+   valRem += ch;
+  }
+ }
+ return(count != 0);
+}
+
+void sendHexRem(char *p, int size)
+{
+ char tmp;
+ char ch;
+ int zeros = 0;
+
+ // printf("size %d", size);
+ p += size;
+ while (size != 0)
+ {
+  --size;
+  p--;
+  tmp = *p;
+  // printf("tmp %2x\n", tmp);
+  ch = tmp;
+  ch >>= 4;
+  ch &= 0xf;
+  if ((ch != 0)
+  ||  zeros)
+  {
+   zeros = 1;
+   if (ch < 10)
+    ch += '0';
+   else
+    ch += 'a' - 10;
+   putRem(ch);
+   // DBGPORT.write(ch);
+  }
+
+  tmp &= 0xf;
+  if ((tmp != 0)
+  ||  zeros)
+  {
+   zeros = 1;
+   if (tmp < 10)
+    tmp += '0';
+   else
+    tmp += 'a' - 10;
+   putRem(tmp);
+   // DBGPORT.write(tmp);
+  }
+ }
+
+ if (zeros == 0)
+  putRem('0');
+}
+
+void procRem(void)
+{
+ int parm;
+ int ch = getRem();
+ if (ch == 1)
+ {
+  if (getHexRem())
+  {
+   //printf("parm %d\n", valRem);
+   switch(valRem)
+   {
+   case MEGA_SET_RPM:
+    DBGPORT.write('1');
+    if (getHexRem())
+    {
+     parm = valRem;
+     if (parm == 0)
+      stopTimer1();
+     else
+      initTimer1(valRem);
+    }
+    break;
+
+   case MEGA_GET_RPM:
+    DBGPORT.write('2');
+    //printf("REM_GET_RPM\n");
+    putRem(' ');
+    sendHexRem((char *) &timer1DutyCyc, sizeof(timer1DutyCyc));
+    break;
+
+   case MEGA_POLL:
+   {
+    DBGPORT.write('3');
+    int rsp = 0;
+    if (eStopNoIn())
+     rsp |= M_POLL_ESTOP_NO << 1;
+    if (eStopNcIn())
+     rsp |= M_POLL_ESTOP_NC << 1;
+    if (spFwdIn())
+     rsp |= M_POLL_SP_FWD << 1;
+    if (spRevIn())
+     rsp |= M_POLL_SP_REV << 1;
+    if (eStop != 0)
+     rsp |= M_POLL_ESTOP << 1;
+    if (wdEna != 0)
+     rsp |= M_POLL_WD_ENA << 1;
+    if (cpActive != 0)
+     rsp |= M_POLL_CP_ACTIVE << 1;
+    if (pwmActive != 0)
+     rsp |= M_POLL_PWM_ACTIVE << 1;
+    putRem(' ');
+    sendHexRem((char *) &rsp, sizeof(rsp));
+   }
+    break;
+
+   default:
+    printf("default\n");
+    break;
+   }
+  }
+ }
+
+ while (1)
+ {
+  ch = getRem();
+  if (ch < 0)
+   break;
+ }
+ //printf("done procRem %d\n", rem.count);
+}
+
+#endif /* defined(AVR_PROMICRO16) */
