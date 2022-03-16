@@ -7,12 +7,16 @@
 #include "timer2.h"
 #include "timer3.h"
 #include "timer4.h"
+#include "timer5.h"
 #include "ctlstates.h"
 
 #define RESET_DEBOUNCE_TIME 20
 #define PWM_INACTIVITY_TIME 500
 #define CHARGE_PUMP_TIMEOUT 20
 #define LED_BLINK_TIME 500
+
+#define ENCODER_TEST 1
+#define USEC_MIN (60L * 1000000L)
 
 unsigned int dutyCycle1;
 T_TIMER_CTL tmr1;
@@ -84,9 +88,34 @@ void eStopAction();		/* actions when in e stop */
 void eStopSet();		/* set e stop condition */
 void eStopClr();		/* clear e stop condition */
 void stopAll();			/* set all outputs to stop */
+
 #if INPUT_LOOP
 void inputLoop();		/* input loop */
-#endif
+#endif	/* INPOT_LOOP */
+
+#if ENCODER_TEST
+void encoderStart();
+void encoderStop();
+
+int rpm;
+char encRun;
+int encRunCount;
+int encCounter;
+int encLines;
+int encMax;
+int encRevCounter;
+char encState;
+char encRev;
+#define encStart() encRun = 1
+#define encStop() encRun = 0
+
+unsigned int isr5Counter;
+unsigned int pwm5Counter;
+
+long int period5;
+unsigned int dutyCycle5;
+T_TIMER_CTL tmr5;
+#endif	/* ENCODER_TEST */
 
 #if CP_DEBUG
 char dbgCpEnable;
@@ -98,16 +127,14 @@ void cmdLoop();			/* command loop */
 void ctlStatus();		/* control status */
 void outStatus();
 
-#define AVR_PROMICRO16
-
-#if defined(AVR_PROMICRO16)
+#if defined(AVR_MEGA2560)
 
 #define REMPORT Serial1
 
 #define REM_IDLE 0
 #define REM_DATA 1
 
-#endif /* defined(AVR_PROMICRO16) */
+#endif /* defined(AVR_MEGA2560) */
 
 void setup()
 {
@@ -138,11 +165,11 @@ void setup()
 #endif /* DEBUG && defined(AVR_PROMICRO16) */
 #endif /* CONSOLE */
 
-#if defined(AVR_PROMICRO16)
+#if defined(AVR_MEGA2560)
  puts(F0("\nstarting 1 19200\n"));
  REMPORT.begin(19200);
  REMPORT.println("remport 1");
-#endif /* defined(AVR_PROMICRO16) */
+#endif /* defined(AVR_MEGA2560) */
 
  P_TIMER_CTL t = &tmr1;
  t->timer = (P_TMR) &TCCR1A;
@@ -192,6 +219,11 @@ void setup()
  showTimer(&tmr4);
 #endif
 #endif /* defined(TCCR4A) && !defined(TCCR4E) */
+
+#if ENCODER_TEST
+ encLines = 400;
+ rpm = 100;
+#endif	/* ENCODER_TEST */
 
  pinConfig();
 
@@ -255,7 +287,7 @@ void setup()
 #endif
 }
 
-#if defined(AVR_PROMICRO16)
+#if defined(AVR_MEGA2560)
 
 #define REM_SIZE 40
 
@@ -277,7 +309,7 @@ int valRem;
 
 #define REM_PRM 1
 
-#endif	/* AVR_PROMICRO16 */
+#endif	/* AVR_MEGA */
 
 void loop()
 {
@@ -294,9 +326,9 @@ void loop()
  }
 #endif /* CONSOLE */
 
-#if defined(AVR_PROMICRO16)
+#if defined(AVR_MEGA2560)
  remCheck();
-#endif	/* AVR_PROMICRO16 */
+#endif	/* AVR_MEGA */
 
 #if INPUT_LOOP
  inputLoop();
@@ -346,9 +378,9 @@ void cmdLoop()
 #if INPUT_LOOP
   inputLoop();
 #endif /* INPUT_LOOP */
-#if defined(AVR_PROMICRO16)
+#if defined(AVR_MEGA2560)
   remCheck();
-#endif	/* AVR_PROMICRO16 */
+#endif	/* AVR_MEGA */
   if (DBGPORT.available())
   {
    char ch = DBGPORT.read();
@@ -531,7 +563,7 @@ void cmdLoop()
      spFwdTClr();
     ctlStatus();
    }
-   else if (ch == 'R')		/* spindle reverse */
+   else if (ch == 'r')		/* spindle reverse */
    {
     ch = query(F1("spRev [%d]: "), spRevIn());
     if (ch == '1')
@@ -692,35 +724,78 @@ void cmdLoop()
    }
 #endif /* defined(TCCR4A) && !defined(TCCR4E) */
 
+#if defined(TCCR5A)
+   else if (ch == '5')		/* control timer 3 spindle pwm test */
+   {
+
+#if TMR5_PWM_TIMER == 0		/* if timer 5 not used for spindle pwm */
+    ch = query(F1("init: "));
+    if (ch == 'y')
+    {
+     if (query(&getnum, F1("period [%ld] us: "), period5))
+     {
+      period5 = val;
+     }
+     if (period5 != 0)
+     {
+      if (query(&getnum, F1("duty cycle [%d]: "), dutyCycle5))
+      {
+       dutyCycle5 = val;
+      }
+      stopTimer5();
+      isr5Counter = 0;
+      pwm5Counter = 0;
+      initTimer5(period5);
+      pwm1Timer5(dutyCycle5);
+     }
+     else
+     {
+      pwm1Timer5(0);
+      stopTimer5();
+     }
+    }
+#endif /* TMR5_PWM_TIMER == 0 */
+    
+    showTimer(&tmr5);
+#if DEBUG
+    printf(F0("isrCounter %u pwmCounter %u\n"), isr5Counter, pwm5Counter);
+#endif
+   }
+#endif /* TCCR5A */
+
    else if (ch == '?')
    {
+#if ENCODER_TEST
+    printf(F0("encCounter %d encRevCounter %d\n"), encCounter, encRevCounter);
+#endif	/* ENCODER_TEST */
+
 #if defined(PINA)
     showPort((P_PORT) &PINA, "A");
-#endif
+#endif	/* PINA */
     showPort((P_PORT) &PINB, "B");
     showPort((P_PORT) &PINC, "C");
     showPort((P_PORT) &PIND, "D");
 #if defined(PINE)
     showPort((P_PORT) &PINE, "E");
-#endif
+#endif	/* PINE */
 #if defined(PINF)
     showPort((P_PORT) &PINF, "F");
-#endif
+#endif	/* PINF */
 #if defined(PING)
     showPort((P_PORT) &PING, "G");
-#endif
+#endif	/* PING */
 #if defined(PINH)
     showPort((P_PORT) &PINH, "H");
-#endif
+#endif	/* PINH */
 #if defined(PINJ)
     showPort((P_PORT) &PINJ, "J");
-#endif
+#endif	/* PINJ */
 #if defined(PINK)
     showPort((P_PORT) &PINK, "K");
-#endif
+#endif	/* PINK */
 #if defined(PINL)
     showPort((P_PORT) &PINL, "L");
-#endif
+#endif	/* L */
    }
 
 #if INPUT_LOOP
@@ -771,13 +846,68 @@ void cmdLoop()
     printf("%d %d %d %d\n", out1Read(), out2Read(), out3Read(), out4Read());
    }
 #endif /* INPUT_LOOP */
+
+#if ENCODER_TEST
+   else if (ch == 'S')		/* start encoder */
+   {
+    encoderStart();
+   }
+   else if (ch == 'V')		/* reverse encoder */
+   {
+    encRev ^= 1;
+    printf(F0("encoder reverse %d\n"), encRev);
+   }
+   else if (ch == 'Q')		/* stop encoder */
+   {
+    encoderStop();
+   }
+   else if (ch == 'E')
+   {
+    if (query(&getnum, F1("encoder [%d] lines : "), encLines))
+    {
+     encLines = val;
+    }
+   }
+#ifdef TCCR5A
+   else if (ch == 'R')
+   {
+    if (period5 != 0)
+    {
+     printf("period5 %ld encLines %d encPulse %d\n",
+	    period5, encLines, encLines * 4);
+     rpm = (unsigned int) (USEC_MIN / (period5 * encLines * 4));
+    }
+    if (query(&getnum, F1("rpm [%d]: "), rpm))
+    {
+     rpm = val;
+    }
+    /*
+      usecPulse = (usec / min) / ((rev / min) * (pulse / rev))
+      revMin = (usec / min) / ((usec / pulse) * (pulse / rev))
+    */
+    printf("rpm %d encLines %d encPulse %d\n",
+	   rpm, encLines, encLines * 4);
+    long int pulseMin = (long int) rpm * encLines * 4;
+    long int period =  (long int) USEC_MIN / ((long int) rpm * encLines * 4);
+    printf("pulseMin %ld pulsePeriod %ld usec\n", pulseMin, period);
+    if (period != period5)
+    {
+     period5 = period;
+     stopTimer5();
+     initTimer5(period5);
+     showTimer(&tmr5);
+    }
+   }
+#endif	/* TCCR5A */
+#endif	/* ENCODER_TEST */
+
   }
  }
 }
 
 void ctlStatus()
 {
- procLoop();			/* run loop in case an input changed */
+ procLoop();		       /* run loop in case an input changed */
 
  printf(F0("eStopNoIn %d eStopNcIn %d eStopNoSet %d eStopNcSet %d\n"),
 	eStopNoIn(), eStopNcIn(), eStopNoSet(), eStopNcSet());
@@ -1379,7 +1509,116 @@ void showPort(P_PORT port, const char *name)
 
 #endif /* CONSOLE */
 
-#if defined(AVR_PROMICRO16)
+#if ENCODER_TEST
+
+void encoderStart()
+{
+ encState = 0;
+ aClr();
+ bClr();
+ syncClr();
+ encMax = encLines * 4;
+ encCounter = 0;
+ encRevCounter = 0;
+ encRunCount = 0;
+ encStart();
+#if CONSOLE
+ puts(F0("encoder start\n"));
+#endif
+}
+
+void encoderStop()
+{
+ encStop();
+#if CONSOLE
+ puts(F0("encoder stop\n"));
+#endif
+}
+
+ISR(TIMER5_OVF_vect)
+{
+ if (encRun)			/* if encoder running */
+ {
+  pulseSet();
+  if (encRunCount != 0)		/* if encoder counting */
+  {
+   if (--encRunCount == 0)	/* if count is now zero */
+   {
+    encStop();			/* stop encoder */
+   }
+  }
+
+  encCounter += 1;		/* update counter */
+  if (encCounter >= encMax)	/* if at maximum */
+  {
+   syncSet();			/* set the sync bit */
+   encCounter = 0;		/* reset */
+   encRevCounter += 1;		/* count a revolution */
+  }
+  else				/* if not at maximum */
+  {
+   syncClr();			/* clear sync bit */
+  }
+
+  if (!encRev)			/* if forwared */
+  {
+   /* 00   01   11   10   */
+   /* 0010 0100 1101 1011 */
+   /*    2    4    d    b */
+   switch (encState)		/* select on state */
+   {
+   case 0:			/* 00 */
+    aSet();			/* 01 0100 4 */
+    break;
+   case 1:			/* 01 */
+    bSet();			/* 11 1101 d */
+    break;
+   case 2:			/* 11 */
+    aClr();			/* 10 1011 b */
+    break;
+   case 3:			/* 10 */
+    bClr();			/* 00 0010 2 */
+    break;
+   }
+  }
+  else
+  {
+   /* 00   10   11   01   */
+   /* 0001 1000 1110 0111 */
+   /*    1    8    e    7 */
+   switch (encState)		/* select on state */
+   {
+   case 0:			/* 00 */
+    bSet();			/* 10 1000 8 */
+    break;
+   case 1:			/* 10 */
+    aSet();			/* 11 1110 e */
+    break;
+   case 2:			/* 11 */
+    bClr();			/* 01 0111 7 */
+    break;
+   case 3:			/* 01 */
+    aClr();			/* 00 0001 1 */
+    break;
+   }
+  }
+  encState += 1;		/* update state */
+  encState &= 0x3;		/* mask in range */
+  pulseClr();
+ }
+ isr5Counter++;
+}
+
+ISR(TIMER5_COMPA_vect)
+{
+#if DEBUG
+ pwm5Counter++;
+#endif
+}
+
+#endif	/* ENCODER_TEST */
+
+#if defined(AVR_MEGA2560)
 
 inline void putRem(char ch)
 {
@@ -1472,13 +1711,11 @@ int getHexRem(void)
    &&  (ch <= '9'))
    {
     ch -= '0';
-    count++;
    }
    else if ((ch >= 'a')
    &&       (ch <= 'f'))
    {
     ch -= 'a' - 10;
-    count++;
    }
    else if (ch == ' ')
    {
@@ -1486,8 +1723,12 @@ int getHexRem(void)
    }
    else if (ch == '\r')
     break;
+   else if (ch < 0)
+    break;
    else
     continue;
+
+   count++;
    valRem <<= 4;
    valRem += ch;
   }
@@ -1550,7 +1791,6 @@ void procRem(void)
  {
   if (getHexRem())
   {
-   //printf("parm %d\n", valRem);
    switch(valRem)
    {
    case MEGA_SET_RPM:
@@ -1567,14 +1807,12 @@ void procRem(void)
 
    case MEGA_GET_RPM:
     DBGPORT.write('2');
-    //printf("REM_GET_RPM\n");
     putRem(' ');
     sendHexRem((char *) &timer1DutyCyc, sizeof(timer1DutyCyc));
     break;
 
    case MEGA_POLL:
    {
-    DBGPORT.write('3');
     int rsp = 0;
     if (eStopNoIn())
      rsp |= M_POLL_ESTOP_NO << 1;
@@ -1610,7 +1848,6 @@ void procRem(void)
   if (ch < 0)
    break;
  }
- //printf("done procRem %d\n", rem.count);
 }
 
-#endif /* defined(AVR_PROMICRO16) */
+#endif /* defined(AVR_MEGA2560) */

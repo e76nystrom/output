@@ -102,6 +102,16 @@ extern void pinConfig();
 #define syncSet() SYNC_Port |= SYNC_Mask
 #define syncClr() SYNC_Port &= ~SYNC_Mask
 
+#define PULSE_Pin 34
+#define PULSE_Port PORTC
+#define PULSE_DDR DDRC
+#define PULSE_In PINC
+#define PULSE_Bit PC3
+#define PULSE_Mask _BV(PULSE_Bit)
+#define pulseRead() ((PULSE_Port & PULSE_Mask) != 0)
+#define pulseSet() PULSE_Port |= PULSE_Mask
+#define pulseClr() PULSE_Port &= ~PULSE_Mask
+
 #define T1_PWM_A_Pin 11
 #define T1_PWM_A_Port PORTB
 #define T1_PWM_A_DDR DDRB
@@ -131,6 +141,16 @@ extern void pinConfig();
 #define t4PwmARead() ((T4_PWM_A_Port & T4_PWM_A_Mask) != 0)
 #define t4PwmASet() T4_PWM_A_Port |= T4_PWM_A_Mask
 #define t4PwmAClr() T4_PWM_A_Port &= ~T4_PWM_A_Mask
+
+#define T5_PWM_B_Pin 45
+#define T5_PWM_B_Port PORTL
+#define T5_PWM_B_DDR DDRL
+#define T5_PWM_B_In PINL
+#define T5_PWM_B_Bit PL4
+#define T5_PWM_B_Mask _BV(T5_PWM_B_Bit)
+#define t5PwmBRead() ((T5_PWM_B_Port & T5_PWM_B_Mask) != 0)
+#define t5PwmBSet() T5_PWM_B_Port |= T5_PWM_B_Mask
+#define t5PwmBClr() T5_PWM_B_Port &= ~T5_PWM_B_Mask
 
 #define CHG_PUMP_Pin 20
 #define CHG_PUMP_In PIND
@@ -304,11 +324,11 @@ extern void pinConfig();
 #define ledSet() LED_Port |= LED_Mask
 #define ledClr() LED_Port &= ~LED_Mask
 
-#define T2_Pin 68
-#define T2_Port PORTK
-#define T2_DDR DDRK
-#define T2_In PINK
-#define T2_Bit PK6
+#define T2_Pin 42
+#define T2_Port PORTL
+#define T2_DDR DDRL
+#define T2_In PINL
+#define T2_Bit PL7
 #define T2_Mask _BV(T2_Bit)
 #define t2Read() ((T2_Port & T2_Mask) != 0)
 #define t2Set() T2_Port |= T2_Mask

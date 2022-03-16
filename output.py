@@ -24,6 +24,7 @@ if True:
          ("B",          69, "out"),
          ("INDEX",      32, "out"),
          ("SYNC",       33, "out"),
+         ("PULSE",      34, "out"),
 
          # ("A",          32, "out"),
          # ("B",          33, "out"),
@@ -34,6 +35,7 @@ if True:
 
          ("T3_PWM_A",    5, "out"), # spindle pwm simulator
          ("T4_PWM_A",    6, "out"), # charge pump simulator
+         ("T5_PWM_B",    45,"out"), # encoder
 
          ("CHG_PUMP",   20, ("exti, rising")), # ChgPump
          ("PWM",        21, ("exti, change")), # PWM
@@ -65,7 +67,7 @@ if True:
          ("PILOT",      46, "out"), # Pilot
 
          ("LED",        13, "out"), # built in led
-         ("T2",         68, "out"),
+         ("T2",         42, "out"),
 
          ("DBG0",       34, "out"),
          ("DBG1",       35, "out"),

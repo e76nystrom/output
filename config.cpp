@@ -10,9 +10,11 @@ void pinConfig()
  pinMode(B_Pin, OUTPUT);
  pinMode(INDEX_Pin, OUTPUT);
  pinMode(SYNC_Pin, OUTPUT);
+ pinMode(PULSE_Pin, OUTPUT);
  pinMode(T1_PWM_A_Pin, OUTPUT);
  pinMode(T3_PWM_A_Pin, OUTPUT);
  pinMode(T4_PWM_A_Pin, OUTPUT);
+ pinMode(T5_PWM_B_Pin, OUTPUT);
  pinMode(CHG_PUMP_Pin, INPUT);
  pinMode(PWM_Pin, INPUT);
  pinMode(PWM_SEL_Pin, OUTPUT);
