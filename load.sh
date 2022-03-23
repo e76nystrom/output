@@ -10,7 +10,7 @@ else
  port=$1
 fi
 
-TARGET=".pio/build/promega/firmware.hex:i"
+TARGET=".pio/build/mega2560/firmware.hex:i"
 echo $TARGET
 
 AVRDUDE="/cygdrive/c/Users/Eric/.platformio/packages/tool-avrdude/avrdude"

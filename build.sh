@@ -4,7 +4,6 @@
 cp *.cpp src/
 cp *.h src/
 cp output.ino src/output_p.cpp
-cp ../../EclipseCPP/LatheCPP/include/ctlstates.h src/ctlstates.h
 
 PATH=/cygdrive/c//Users/Eric/.platformio/penv/Scripts:\
 /cygdrive/c/Python39:\
@@ -13,7 +12,7 @@ PATH=/cygdrive/c//Users/Eric/.platformio/penv/Scripts:\
 HOME=C:/Users/Eric platformio run
 
 rm -f *.lst
-f=.pio/build/promega/firmware.elf
+f=.pio/build/mega2560/firmware.elf
 if [ -e $f ]; then
  avr-objdump.exe -l -d $f >outputMega.lst
 fi

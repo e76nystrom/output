@@ -8,7 +8,7 @@
 #include "timer3.h"
 #include "timer4.h"
 #include "timer5.h"
-#include "ctlstates.h"
+#include "megaCtlstates.h"
 
 #define RESET_DEBOUNCE_TIME 20
 #define PWM_INACTIVITY_TIME 500
