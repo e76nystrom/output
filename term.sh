@@ -2,7 +2,7 @@
 
 if [ -z $1 ]
 then
- port="COM3"
+ port="COM9"
 else
  port=$1
 fi

@@ -5,7 +5,7 @@ serial=1
 avrisp=0
 if [ -z $1 ]
 then
- port="COM20"
+ port="COM9"
 else
  port=$1
 fi

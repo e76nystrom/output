@@ -21,6 +21,14 @@ void setMegaVar(int parm, T_DATA_UNION val)
   mVar.mparmVfdEna = val.t_char;
   break;
 
+ case MPARM_PWM_CFG:             /*  2 0x02  */
+  mVar.mparmPwmCfg = val.t_char;
+  break;
+
+ case MPARM_MAX_PARM:            /*  3 0x03 mega maximum parameter */
+  mVar.mparmMaxParm = val.t_char;
+  break;
+
  };
 }
 
@@ -34,6 +42,14 @@ void getMegaVar(int parm, P_DATA_UNION val)
 
  case MPARM_VFD_ENA:             /*  1 0x01  */
   val->t_char = mVar.mparmVfdEna;
+  break;
+
+ case MPARM_PWM_CFG:             /*  2 0x02  */
+  val->t_char = mVar.mparmPwmCfg;
+  break;
+
+ case MPARM_MAX_PARM:            /*  3 0x03 mega maximum parameter */
+  val->t_char = mVar.mparmMaxParm;
   break;
 
  };

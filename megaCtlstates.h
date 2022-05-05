@@ -27,3 +27,24 @@ const char *pollMegaList[] =
 extern const char *pollMegaList[];
 
 #endif
+
+// mega vfd speed selector
+
+enum VFDSPEED
+{
+ MEGA_SLOW_PWM,                 /*  0 x00 Slow PWM */
+ MEGA_FAST_PWM,                 /*  1 x01 Fast PWM */
+ MEGA_DIRECT_RPM,               /*  2 x02 Set RPM */
+};
+
+#ifdef ENUM_VFDSPEED
+
+const char *vfdSpeedList[] = 
+{
+};
+
+#else
+
+extern const char *vfdSpeedList[];
+
+#endif

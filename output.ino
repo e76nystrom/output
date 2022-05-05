@@ -8,7 +8,13 @@
 #include "timer3.h"
 #include "timer4.h"
 #include "timer5.h"
+#if defined(ARDUINO_AVR_MEGA2560)
+#include "megaCmdList.h"
 #include "megaCtlstates.h"
+#include "megaParmList.h"
+#include "megaStruct.h"
+#include "megaParm.h"
+#endif	/* ARDUINO_AVR_MEAGA2560 */
 
 #define RESET_DEBOUNCE_TIME 20
 #define PWM_INACTIVITY_TIME 500
@@ -106,8 +112,8 @@ int encMax;
 int encRevCounter;
 char encState;
 char encRev;
-#define encStart() encRun = 1
-#define encStop() encRun = 0
+inline void encStart() {encRun = 1;}
+inline void encStop() {encRun = 0;}
 
 unsigned int isr5Counter;
 unsigned int pwm5Counter;
@@ -124,17 +130,18 @@ char dbgCpEnable;
 #if CONSOLE
 void cmdLoop();			/* command loop */
 #endif
+
 void ctlStatus();		/* control status */
 void outStatus();
 
-#if defined(AVR_MEGA2560)
+#if defined(ARDUINO_AVR_MEGA2560)
 
 #define REMPORT Serial1
 
 #define REM_IDLE 0
 #define REM_DATA 1
 
-#endif /* defined(AVR_MEGA2560) */
+#endif /* defined(ARDUINO_AVR_MEGA2560) */
 
 void setup()
 {
@@ -165,11 +172,11 @@ void setup()
 #endif /* DEBUG && defined(AVR_PROMICRO16) */
 #endif /* CONSOLE */
 
-#if defined(AVR_MEGA2560)
+#if defined(ARDUINO_AVR_MEGA2560)
  puts(F0("\nstarting 1 19200\n"));
  REMPORT.begin(19200);
  REMPORT.println("remport 1");
-#endif /* defined(AVR_MEGA2560) */
+#endif /* defined(ARDUINO_AVR_MEGA2560) */
 
  P_TIMER_CTL t = &tmr1;
  t->timer = (P_TMR) &TCCR1A;
@@ -179,6 +186,7 @@ void setup()
  t->aMask = OC1A_Mask;
 
 #if defined(TCCR3A)
+
  t = &tmr3;
  t->timer = (P_TMR) &TCCR3A;
  t->timsk = (uint8_t *) &TIMSK3;
@@ -197,9 +205,11 @@ void setup()
 #if CONSOLE
  showTimer(&tmr3);
 #endif
+
 #endif /*TCCR3A */
 
 #if defined(TCCR4A) && !defined(TCCR4E)
+
  t = &tmr4;
  t->timer = (P_TMR) &TCCR4A;
  t->timsk = (uint8_t *) &TIMSK4;
@@ -218,6 +228,7 @@ void setup()
 #if CONSOLE
  showTimer(&tmr4);
 #endif
+
 #endif /* defined(TCCR4A) && !defined(TCCR4E) */
 
 #if ENCODER_TEST
@@ -287,7 +298,7 @@ void setup()
 #endif
 }
 
-#if defined(AVR_MEGA2560)
+#if defined(ARDUINO_AVR_MEGA2560)
 
 #define REM_SIZE 40
 
@@ -326,9 +337,9 @@ void loop()
  }
 #endif /* CONSOLE */
 
-#if defined(AVR_MEGA2560)
+#if defined(ARDUINO_AVR_MEGA2560)
  remCheck();
-#endif	/* AVR_MEGA */
+#endif	/* ARDUINO_AVR_MEGA2560 */
 
 #if INPUT_LOOP
  inputLoop();
@@ -375,12 +386,15 @@ void cmdLoop()
  while (1)
  {
   procLoop();
+
 #if INPUT_LOOP
   inputLoop();
 #endif /* INPUT_LOOP */
-#if defined(AVR_MEGA2560)
+
+#if defined(ARDUINO_AVR_MEGA2560)
   remCheck();
-#endif	/* AVR_MEGA */
+#endif	/* ARDUINO_AVR_MEGA2560 */
+
   if (DBGPORT.available())
   {
    char ch = DBGPORT.read();
@@ -388,13 +402,26 @@ void cmdLoop()
    newLine();
    if (ch == 'x')		/* exit */
     break;
+   else if (ch == '?')
+   {
+#if defined(TCCR5A)
+    printf(F0("R - set rpm\n"));
+#endif	/* TCCR5A */
+
+#if defined(ENOCDER_TEST)
+    printf(F0("E - encoder lines\n"
+	      "S - start encoder\n"
+	      "Q - stop encoder\n"
+	      "V - r`everse encoder\n"));
+#endif  /* ENCODER_TEST */
+   }
    else if (ch == 'P')		/* test pins */
    {
     if (query(&getnum, F1("pin number")))
     {
      pinMode(val, OUTPUT);
      char flag = 0;
-     printf("testing...");
+     printf(F0("testing..."));
      fflush(stdout);
      while (1)
      {
@@ -443,6 +470,7 @@ void cmdLoop()
      else if (ch == '1')
       spEna0Set();
 #endif
+
 #if defined(SP_ENA_Pin)
      ch = query(F1("spEna [%d]: "), spEnaRead());
      if (ch == '0')
@@ -457,8 +485,8 @@ void cmdLoop()
       spEna1Clr();
      else if (ch == '1')
       spEna1Set();
-#endif
      break;
+#endif
      
     case '2':
 #if defined(SW12_V1_Pin)
@@ -763,7 +791,7 @@ void cmdLoop()
    }
 #endif /* TCCR5A */
 
-   else if (ch == '?')
+   else if (ch == '>')
    {
 #if ENCODER_TEST
     printf(F0("encCounter %d encRevCounter %d\n"), encCounter, encRevCounter);
@@ -826,24 +854,24 @@ void cmdLoop()
      tmp |= 0x400;
     if (pin15Set())
      tmp |= 0x800;
-    printf("portb %02x portc %02x portd %02x\n", PINB, PINC, PIND);
-    printf("%03x\n", tmp);
-    printf("13 12 11  9  8  7  6  5  4  3  2 15\n");
+    printf(F0("portb %02x portc %02x portd %02x\n"), PINB, PINC, PIND);
+    printf(F0("%03x\n"), tmp);
+    printf(F0("13 12 11  9  8  7  6  5  4  3  2 15\n"));
 #if 1
-    printf("xh x- x+ ** ** ** ** ** ** ** ** **\n");
+    printf(F0("xh x- x+ ** ** ** ** ** ** ** ** **\n"));
 #endif
 #if 0
-    printf("x+ ** x- pr y+ ** y- ** z+ ** z- **\n");
+    printf(F0("x+ ** x- pr y+ ** y- ** z+ ** z- **\n"));
 #endif
     int mask = 1;
     for (int i = 0; i < 12; i++)
     {
-     printf("%2d ", (mask & tmp) ? 1 : 0);
+     printf(F0("%2d "), (mask & tmp) ? 1 : 0);
      mask <<= 1;
     }
-    printf("\n");
-    printf("1 2 3 4\n");
-    printf("%d %d %d %d\n", out1Read(), out2Read(), out3Read(), out4Read());
+    printf(F0("\n"));
+    printf(F0("1 2 3 4\n"));
+    printf(F0("%d %d %d %d\n"), out1Read(), out2Read(), out3Read(), out4Read());
    }
 #endif /* INPUT_LOOP */
 
@@ -868,12 +896,13 @@ void cmdLoop()
      encLines = val;
     }
    }
+
 #ifdef TCCR5A
    else if (ch == 'R')
    {
     if (period5 != 0)
     {
-     printf("period5 %ld encLines %d encPulse %d\n",
+     printf(F0("period5 %ld encLines %d encPulse %d\n"),
 	    period5, encLines, encLines * 4);
      rpm = (unsigned int) (USEC_MIN / (period5 * encLines * 4));
     }
@@ -885,11 +914,11 @@ void cmdLoop()
       usecPulse = (usec / min) / ((rev / min) * (pulse / rev))
       revMin = (usec / min) / ((usec / pulse) * (pulse / rev))
     */
-    printf("rpm %d encLines %d encPulse %d\n",
+    printf(F0("rpm %d encLines %d encPulse %d\n"),
 	   rpm, encLines, encLines * 4);
     long int pulseMin = (long int) rpm * encLines * 4;
     long int period =  (long int) USEC_MIN / ((long int) rpm * encLines * 4);
-    printf("pulseMin %ld pulsePeriod %ld usec\n", pulseMin, period);
+    printf(F0("pulseMin %ld pulsePeriod %ld usec\n"), pulseMin, period);
     if (period != period5)
     {
      period5 = period;
@@ -1618,7 +1647,7 @@ ISR(TIMER5_COMPA_vect)
 
 #endif	/* ENCODER_TEST */
 
-#if defined(AVR_MEGA2560)
+#if defined(ARDUINO_AVR_MEGA2560)
 
 inline void putRem(char ch)
 {
@@ -1835,8 +1864,35 @@ void procRem(void)
    }
     break;
 
+   case MEGA_SET_VAL:
+   {
+    getHexRem();			/* read the parameter number */
+    int parm = valRem;
+    if (parm < MPARM_MAX_PARM)		/* if in range */
+    {
+     T_DATA_UNION parmVal;
+     getHexRem();			/* get the value */
+     parmVal.t_int = valRem;
+     setMegaVar(parm, parmVal);
+    }
+   }
+    break;
+
+   case MEGA_READ_VAL:
+   {
+    getHexRem();		/* save the parameter number */
+    int parm = valRem;
+    T_DATA_UNION parmVal;
+    parmVal.t_int = 0;
+    getMegaVar(parm, &parmVal);
+    int size = megaParm[parm];
+    printf(F0("r p %2x s %d v %8x\n"),
+	   (unsigned int) parm, size, parmVal.t_unsigned_int);
+    sendHexRem((char *) &parmVal.t_char, size); /* send the response */
+   }
+
    default:
-    printf("default\n");
+    printf(F0("default\n"));
     break;
    }
   }
@@ -1850,4 +1906,4 @@ void procRem(void)
  }
 }
 
-#endif /* defined(AVR_MEGA2560) */
+#endif /* ARDUINO_AVR_MEGA2560 */

@@ -4,4 +4,6 @@ enum MEGA_COMMANDS
  MEGA_SET_RPM,                  /* 0x01 set pwm for rpm */
  MEGA_GET_RPM,                  /* 0x02 get pwm value */
  MEGA_POLL,                     /* 0x03 poll mega info */
+ MEGA_SET_VAL,                  /* 0x04 set mega value */
+ MEGA_READ_VAL,                 /* 0x05 read mega value */
 };
