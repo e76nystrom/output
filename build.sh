@@ -21,18 +21,24 @@ else
  pio run
 fi
 
+if [[ "$OSTYPE" == "cygwin" ]]; then
+ OBJDUMP="avr-objdump"
+else
+ OBJDUMP="~/.platformio/packages/toolchain-atmelavr/bin/avr-objdump"
+fi
+
 rm -f *.lst
 f=.pio/build/mega2560/firmware.elf
 if [ -e $f ]; then
- avr-objdump.exe -l -d $f >outputMega.lst
+ $OBJDUMP -l -d $f >outputMega.lst
 fi
 
 f=.pio/build/pro16MHzatmega328/firmware.elf
 if [ -e $f ]; then
- avr-objdump.exe -l -d $f >outputMini.lst
+ $OBJDUMP -l -d $f >outputMini.lst
 fi
 
 f=.pio/build/sparkfun_promicro16/firmware.elf
 if [ -e $f ]; then
- avr-objdump.exe -l -d $f >outputProMicro.lst
+ $OBJDUMP -l -d $f >outputProMicro.lst
 fi
