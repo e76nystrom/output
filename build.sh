@@ -1,15 +1,25 @@
 #!/bin/bash
 
-./asetup.py output
+if [[ "$OSTYPE" == "cygwin" ]]; then
+ ./asetup.py output
+else
+ python asetup.py
+fi
+
+mkdir -p src
 cp *.cpp src/
 cp *.h src/
 cp output.ino src/main.cpp
 
-PATH=/cygdrive/c//Users/Eric/.platformio/penv/Scripts:\
+if [[ "$OSTYPE" == "cygwin" ]]; then
+ PATH=/cygdrive/c//Users/Eric/.platformio/penv/Scripts:\
 /cygdrive/c/Python39:\
 /cygdrive/c/Python39/DLLs:\
 /cygdrive/c/Python39/Scripts \
-HOME=C:/Users/Eric platformio run
+  HOME=C:/Users/Eric platformio run
+else
+ pio run
+fi
 
 rm -f *.lst
 f=.pio/build/mega2560/firmware.elf
