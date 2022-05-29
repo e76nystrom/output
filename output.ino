@@ -34,18 +34,19 @@ T_TIMER_CTL tmr1;
 #if defined(TCCR2A)
 #if DEBUG
 unsigned int isr2Counter;
-#endif
-#endif
+#endif	/* DEBUG */
+#endif	/* TCCR2A */
 
 #if defined(TCCR3A)
 
 T_TIMER_CTL tmr3;
 long int period3;
 unsigned int dutyCycle3;
+
 #if DEBUG
 unsigned int pwm3Counter;
 unsigned int isr3Counter;
-#endif
+#endif	/* DEBUG */
 
 #endif /* TCC3RA */
 
@@ -54,10 +55,11 @@ unsigned int isr3Counter;
 T_TIMER_CTL tmr4;
 long int period4;
 unsigned int dutyCycle4;
+
 #if DEBUG
 unsigned int isr4Counter;
 unsigned int pwm4Counter;
-#endif
+#endif	/* DEBUG */
 
 #endif /* defined(TCCR4A) && !defined(TCCR4E) */
 
@@ -129,7 +131,7 @@ T_TIMER_CTL tmr5;
 
 #if CP_DEBUG
 char dbgCpEnable;
-#endif
+#endif	/* CP_DEBUG */
 
 #if CONSOLE
 void cmdLoop();			/* command loop */
@@ -236,7 +238,7 @@ void setup()
 
 #if CONSOLE
  showTimer(&tmr4);
-#endif
+#endif	/* CONSOLE */
 
 #endif /* defined(TCCR4A) && !defined(TCCR4E) */
 
@@ -251,7 +253,7 @@ void setup()
  
  #if defined(PWM_SEL_Pin)
  pwmSelClr();			/* select fast pwm */
- #endif
+ #endif	 /* PWM_SEL_Pin */
  
  cpActive = 0;			/* set charge pump to inactive */
  cpFail = 0;
@@ -439,22 +441,23 @@ void cmdLoop()
     ch = query(F1(
 #if defined(SP_ENA0_Pin)
 		"0 - nspEna0"
-#endif
-#if defined(SP_ENA0_Pin)
+#endif	/* SP_ENA0_Pin */
+#if defined(SP_ENA1_Pin)
 		"\n1 - nspEna1"
-#endif
+#endif	/* SP_ENA1_Pin */
+
 #if defined(SP_ENA_Pin)
 		"0 - spEna"
-#endif
+#endif	/* SP_ENA_Pin */
 #if defined(SW12_V1_Pin)
 		"\n2 - sw12V1"
-#endif
-#if defined(SW12_V1_Pin)
+#endif	/* SW12_V1_Pin */
+#if defined(SW12_V2_Pin)
 		"\n3 - sw12v2"
-#endif
+#endif	/* SW12_V2_Pin */
 #if defined(STEP_DIS_Pin)
 		"\n4 - stepDis"
-#endif
+#endif	/* STEP_DIS_Pin */
 		": "));
     switch (ch)
     {
@@ -465,7 +468,7 @@ void cmdLoop()
       spEna0Clr();
      else if (ch == '1')
       spEna0Set();
-#endif
+#endif	/* SP_ENA0_Pin */
 
 #if defined(SP_ENA_Pin)
      ch = query(F1("spEna [%d]: "), spEnaRead());
@@ -473,7 +476,7 @@ void cmdLoop()
       spEnaClr();
      else if (ch == '1')
       spEnaSet();
-#endif
+#endif	/* SP_ENA_Pin */
      break;
 
 #if defined(SP_ENA1_Pin)
@@ -482,7 +485,7 @@ void cmdLoop()
      else if (ch == '1')
       spEna1Set();
      break;
-#endif
+#endif	/* SP_ENA1_Pin */
      
     case '2':
 #if defined(SW12_V1_Pin)
@@ -491,7 +494,7 @@ void cmdLoop()
       sw12V1Clr();
      else if (ch == '1')
       sw12V1Set();
-#endif
+#endif	/* SW12_V1_Pin */
      break;
 
     case '3':
@@ -501,7 +504,7 @@ void cmdLoop()
       sw12V2Clr();
      else if (ch == '1')
       sw12V2Set();
-#endif
+#endif	/* SW12_V2_Pin */
      break;
 
     case '4':
@@ -511,7 +514,7 @@ void cmdLoop()
       stepDisClr();
      else if (ch == '1')
       stepDisSet();
-#endif
+#endif	/* STEP_DIS_Pin */
      break;
 
     default:
@@ -537,7 +540,7 @@ void cmdLoop()
 #else
     printf(F0("EICRA %02x EIMSK %02x EIFR %02x\n"),
 	   EICRA, EIMSK, EIFR);
-#endif
+#endif	/* EICRB */
    }
 
 #if defined(PWM_SEL_Pin)
@@ -665,7 +668,7 @@ void cmdLoop()
      {
       dutyCycle = val;
      }
-#endif
+#endif	/* 0 */
      initTimer2();
     }
     showTimer2();
@@ -673,7 +676,7 @@ void cmdLoop()
     readTimer2();
     printf(F0("isrCounter %u pmwTimerCount %04x\n"),
 	   isr2Counter, pwmTimerCount.w);
-#endif
+#endif	/* DEBUG */
    }
 #endif /* TCCR2A */
 
@@ -712,7 +715,7 @@ void cmdLoop()
     showTimer(&tmr3);
 #if DEBUG
     printf(F0("isrCounter %u pwmCounter %u\n"), isr3Counter, pwm3Counter);
-#endif
+#endif	/* DEBUG */
    }
 #endif /* TCCR3A */
 
@@ -747,7 +750,7 @@ void cmdLoop()
     showTimer(&tmr4);
 #if DEBUG
     printf(F0("isrCounter %u pwmCounter %u\n"), isr4Counter, pwm4Counter);
-#endif
+#endif	/* DEBUG */
    }
 #endif /* defined(TCCR4A) && !defined(TCCR4E) */
 
@@ -786,7 +789,7 @@ void cmdLoop()
     showTimer(&tmr5);
 #if DEBUG
     printf(F0("isrCounter %u pwmCounter %u\n"), isr5Counter, pwm5Counter);
-#endif
+#endif	/* DEBUG */
    }
 #endif /* TCCR5A */
 
@@ -856,12 +859,14 @@ void cmdLoop()
     printf(F0("portb %02x portc %02x portd %02x\n"), PINB, PINC, PIND);
     printf(F0("%03x\n"), tmp);
     printf(F0("13 12 11  9  8  7  6  5  4  3  2 15\n"));
+
 #if 1
     printf(F0("xh x- x+ ** ** ** ** ** ** ** ** **\n"));
-#endif
+#endif	/* 1 */
 #if 0
     printf(F0("x+ ** x- pr y+ ** y- ** z+ ** z- **\n"));
-#endif
+#endif	/* 0 */
+
     int mask = 1;
     for (int i = 0; i < 12; i++)
     {
@@ -968,19 +973,19 @@ void outStatus()
 {
 #if defined(SP_ENA_Pin)
  printf(F0("spEna %d "), spEnaRead());
-#endif
+#endif	/* SP_ENA_Pin */
 #if defined(SP_ENA1_Pin)
  printf(F0("spEna1 %d "), spEna1Read());
-#endif
+#endif	/* SP_ENA1_Pin */
 #if defined(SP_ENA2_Pin)
  printf(F0("spEna2 %d "), spEna2Read());
-#endif
+#endif	/* SP_ENA2_Pin */
 #if defined(SW12_V1_Pin)
  printf(F0("sw12V1 %d "), sw12V1Read());
-#endif
+#endif	/* SW12_V1_Pin */
 #if defined(SW12_V2_Pin)
  printf(F0("sw12V2 %d "), sw12V2Read());
-#endif
+#endif	/* SW12_V2_Pin */
  newLine();
 }
 
@@ -1024,7 +1029,7 @@ void inputLoop()
   out3Clr();
 */
 
-#endif
+#endif	/* 1 */
 #if 0
 
  if (pin13Clr() || pin11Clr())	// x axis
@@ -1042,7 +1047,7 @@ void inputLoop()
  else
   out3Clr();
 
-#endif
+#endif	/* 0 */
 #if 0
  
  if (pin11Clr() || pin6Clr() || pin4Clr()) // home
@@ -1056,14 +1061,14 @@ void inputLoop()
  else
   out2Clr();
 
-#endif
+#endif	/* 0 */
 
 #if 0
  if (pin9Clr()) // || pin5Clr() || pin15Clr()) // probe
   out4Set();
  else
   out4Clr();
-#endif
+#endif	/* 0 */
 }
 
 #endif /* INPUT_LOOP */
@@ -1159,7 +1164,7 @@ void procChargePump()
    if (DEBUG)
     printf(F0("charge pump failed curTime %u cpTime %u delta %u\n"),
 	   curTime, tmpTime, curTime - tmpTime);
-#endif
+#endif	/* CONSOLE */
   }
   cpTime = curTime - 30;
  }
@@ -1364,19 +1369,19 @@ void stopAll()
  vfdRevClr();			/* and reverse */
 #if defined(SP_ENA_Pin)
  spEnaClr();			/* stop spindle */
-#endif
+#endif	/* SP_ENA_Pin2 */
 #if defined(SP_ENA1_Pin)
  spEna1Clr();			/* stop spindle */
-#endif
+#endif	/* SP_ENA1_Pin */
 #if defined(SP_ENA2_Pin)
  spEna2Clr();			/* stop spindle */
-#endif
+#endif	/* SP_ENA2_Pin */
 #if defined(SW12_V1_Pin)
  sw12V1Clr();
-#endif
+#endif	/* SW12_V1_Pin */
 #if defined(SW12_V2_Pin)
  sw12V2Clr();
-#endif
+#endif	/* SW12_V2_Pin */
 }
 
 ISR(TIMER1_OVF_vect)
@@ -1399,7 +1404,7 @@ ISR(TIMER2_OVF_vect)
  pwmTimerHigh++;			// update overflow counter
 #if DEBUG
  isr2Counter++;
-#endif
+#endif	/* DEBUG */
 }
 
 /* interrupt 0 pwm signal */
@@ -1439,7 +1444,7 @@ ISR(INT0_vect)
  pwmInterrupts++;		// count interrupts
 }
 
-#endif
+#endif	/* TMR2_PWM_TIMER */
 
 #if TMR3_PWM_TIMER
 
@@ -1477,7 +1482,7 @@ ISR(INT0_vect)
  pwmInterrupts++;		// count interrupts
 }
 
-#endif
+#endif	/* TMR3_PWM_TIMER */
 
 /* interrupt 1 charge pump */
 
@@ -1505,14 +1510,14 @@ ISR(TIMER3_COMPA_vect)
 {
 #if DEBUG
  pwm3Counter++;
-#endif
+#endif	/* DEBUG */
 }
 
 ISR(TIMER3_OVF_vect)
 {
 #if DEBUG
  isr3Counter++;
-#endif
+#endif	/* DEBUG */
 }
 
 #endif /* TCCR3A */
@@ -1525,14 +1530,14 @@ ISR(TIMER4_OVF_vect)
 {
 #if DEBUG
  isr4Counter++;
-#endif
+#endif	/* DEBUG */
 }
 
 ISR(TIMER4_COMPA_vect)
 {
 #if DEBUG
  pwm4Counter++;
-#endif
+#endif	/* DEBUG */
 }
 
 #endif /* defined(TCCR4A) && !defined(TCCR4E) */
@@ -1594,7 +1599,7 @@ void encoderStart()
  encStart();
 #if CONSOLE
  puts(F0("encoder start\n"));
-#endif
+#endif	/* CONSOLE */
 }
 
 void encoderStop()
@@ -1602,7 +1607,7 @@ void encoderStop()
  encStop();
 #if CONSOLE
  puts(F0("encoder stop\n"));
-#endif
+#endif	/* CONSOLE */
 }
 
 ISR(TIMER5_OVF_vect)
@@ -1689,7 +1694,7 @@ ISR(TIMER5_COMPA_vect)
 {
 #if DEBUG
  pwm5Counter++;
-#endif
+#endif	/* DEBUG */
 }
 
 #endif	/* ENCODER_TEST */
@@ -1876,7 +1881,7 @@ void setRpmTimer()
   initTimer5(period5);
  }
 }
-#endif
+#endif	/* ENCODER_TEST */
 
 void procRem()
 {
