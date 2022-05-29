@@ -3,7 +3,7 @@
 ./asetup.py output
 cp *.cpp src/
 cp *.h src/
-cp output.ino src/output_p.cpp
+cp output.ino src/main.cpp
 
 PATH=/cygdrive/c//Users/Eric/.platformio/penv/Scripts:\
 /cygdrive/c/Python39:\

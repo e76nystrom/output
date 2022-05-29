@@ -1,7 +1,9 @@
 char megaParm[] =
 {
- sizeof(mVar.mparmRpm),         /* 0x00 rpm value */
- sizeof(mVar.mparmVfdEna),      /* 0x01  */
- sizeof(mVar.mparmPwmCfg),      /* 0x02  */
- sizeof(mVar.mparmMaxParm),     /* 0x03 mega maximum parameter */
+ sizeof(mVar.mParmRpm),         /* 0x00 rpm value */
+ sizeof(mVar.mParmVfdEna),      /* 0x01  */
+ sizeof(mVar.mParmPwmCfg),      /* 0x02  */
+ sizeof(mVar.mParmEncTest),     /* 0x03  */
+ sizeof(mVar.mParmEncLines),    /* 0x04  */
+ sizeof(mVar.mParmMaxParm),     /* 0x05 mega maximum parameter */
 };

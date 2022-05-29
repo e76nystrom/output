@@ -68,7 +68,7 @@ void initTimer5(long uSec)
   timer5Prescale = cfg->sel;
  }
 
- // stop timer, clear wavefrom gen bits, clear input capture bits
+ // stop timer, clear waveform gen bits, clear input capture bits
  TCCR5B = 0;
  // disable all pwm output and clear waveform generator bits
  TCCR5A = 0;
@@ -85,7 +85,7 @@ void initTimer5(long uSec)
  ICR5 = cycles.low;
  // clear interrupt flags
  TIFR5 = _BV(ICF5) | _BV(OCF5C) | _BV(OCF5B) | _BV(OCF5A) | _BV(TOV5);
- // enable overflow interrrupt
+ // enable overflow interrupt
  TIMSK5 = _BV(TOIE5);
  // set clock divider and enable clock
  TCCR5B &= ~(_BV(CS50) | _BV(CS51) | _BV(CS52));
@@ -108,6 +108,8 @@ void pwm1Timer5(unsigned int duty)
  TCCR5A |= _BV(COM5A1);
  TIMSK5 |= _BV(OCIE5A);
 #if CONSOLE
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-attributes"
  printf(F0("DDRE %02x TCCR5A %02x OCR5A %02x\n"), DDRE, TCCR5A, OCR5A);
 #endif
 }

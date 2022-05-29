@@ -50,6 +50,8 @@ void initTimer2()
 }
 
 #if CONSOLE
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-attributes"
 void showTimer2()
 {
  printf(F0("TCCR2A %02x TCCR2B %02x TCNT2 %02x TIMSK2 %02x TIFR2 %02x\n"),

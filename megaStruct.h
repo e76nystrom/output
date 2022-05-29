@@ -24,10 +24,12 @@ void getMegaVar(int parm, P_DATA_UNION val);
 
 typedef struct sMegaVar
 {
- uint16_t mparmRpm;             /* 0x00 rpm value */
- char mparmVfdEna;              /* 0x01  */
- char mparmPwmCfg;              /* 0x02  */
- char mparmMaxParm;             /* 0x03 mega maximum parameter */
+ int mParmRpm;                  /* 0x00 rpm value */
+ char mParmVfdEna;              /* 0x01  */
+ char mParmPwmCfg;              /* 0x02  */
+ char mParmEncTest;             /* 0x03  */
+ int mParmEncLines;             /* 0x04  */
+ char mParmMaxParm;             /* 0x05 mega maximum parameter */
 } T_MEGA_VAR, *P_MEGA_VAR;
 
 extern T_MEGA_VAR mVar;

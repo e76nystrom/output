@@ -8,6 +8,8 @@
 #include "timer3.h"
 #include "timer4.h"
 #include "timer5.h"
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-attributes"
 #if defined(ARDUINO_AVR_MEGA2560)
 #include "megaCmdList.h"
 #include "megaCtlstates.h"
@@ -21,7 +23,9 @@
 #define CHARGE_PUMP_TIMEOUT 20
 #define LED_BLINK_TIME 500
 
+#if defined(ARDUINO_AVR_MEGA2560)
 #define ENCODER_TEST 1
+#endif	/* ARDUINO_AVR_MEAGA2560 */
 #define USEC_MIN (60L * 1000000L)
 
 unsigned int dutyCycle1;
@@ -80,24 +84,24 @@ char cpActive;			/* charge pump active */
 uint16_t cpFail;		/* charge pump failure */
 volatile uint16_t cpTime;	/* last charge pump time */
 char wdEna;			/* enable watchdog signal */
-char eStop;			/* e stop flag */
+char eStop;			/* estop flag */
 uint16_t lastResetTime;		/* last reset button time */
 uint16_t cpInterrupts;
 
 uint16_t intMillis();		/* short integer milliseconds */
 void procLoop();		/* processing loop */
 void procChargePump();		/* charge pump control */
-void procEStop();		/* e stop control */
+void procEStop();		/* estop control */
 void procPWM();			/* spindle pwm control */
 void procSpindle();		/* spindle switch control */
-void eStopAction();		/* actions when in e stop */
-void eStopSet();		/* set e stop condition */
-void eStopClr();		/* clear e stop condition */
+void eStopAction();		/* actions when in estop */
+void eStopSet();		/* set estop condition */
+void eStopClr();		/* clear estop condition */
 void stopAll();			/* set all outputs to stop */
 
 #if INPUT_LOOP
 void inputLoop();		/* input loop */
-#endif	/* INPOT_LOOP */
+#endif	/* INPUT_LOOP */
 
 #if ENCODER_TEST
 void encoderStart();
@@ -129,7 +133,7 @@ char dbgCpEnable;
 
 #if CONSOLE
 void cmdLoop();			/* command loop */
-#endif
+#endif	/* CONSOLE */
 
 void ctlStatus();		/* control status */
 void outStatus();
@@ -143,6 +147,11 @@ void outStatus();
 
 #endif /* defined(ARDUINO_AVR_MEGA2560) */
 
+#if defined(PILOT_Pin)
+uint16_t pilotTime;
+#define PILOT_INTERVAL 500
+#endif /* PILOT_Pin */
+
 void setup()
 {
 #if CONSOLE
@@ -152,7 +161,7 @@ void setup()
 #if 0 && DEBUG && defined(AVR_PROMICRO16)
  char delay = 10;
  uint16_t t0 = 0;
- while (1)
+ while (true)
  {
   if ((intMillis() - t0) > 1000)
   {
@@ -204,7 +213,7 @@ void setup()
 
 #if CONSOLE
  showTimer(&tmr3);
-#endif
+#endif	/* CONSOLE */
 
 #endif /*TCCR3A */
 
@@ -244,8 +253,6 @@ void setup()
  pwmSelClr();			/* select fast pwm */
  #endif
  
- eStopSet();			/* put in e stop condition */
-
  cpActive = 0;			/* set charge pump to inactive */
  cpFail = 0;
  ledTime = 0;
@@ -260,15 +267,15 @@ void setup()
  initTimer2();			/* init timer 2 pwm */
 #if CONSOLE
  showTimer2();
-#endif
-#endif /* TMR2_PWM_TIMER */
+#endif	/* CONSOLE */
+#endif	/* TMR2_PWM_TIMER */
 
 #if TMR3_PWM_TIMER
  initTimer3();			/* init timer 3 pwm */
 #if CONSOLE
  showTimer(&tmr3);
-#endif
-#endif /* TMR3_PWM_TIMER */
+#endif	/* CONSOLE */
+#endif	/* TMR3_PWM_TIMER */
 
 #if INPUT_TEST
  spFwdTClr();			/* clear simulated inputs */
@@ -276,26 +283,27 @@ void setup()
  eStopNcTClr();
  eStopNoTClr();
  eStopRstTClr();
-#endif
+#endif	/* INPUT_TEST */
 
- wDogClr();			/* clear watchdog output */
+// wDogClr();			/* clear watchdog output */
  stopAll();			/* stop everything */
- eStopSet();			/* start in e stop mode */
-#if defined(PILOT_PIN)
+ eStopSet();			/* start in estop mode */
+
+#if defined(PILOT_Pin)
  pilotClr();			/* turn on pilot light */
-#endif
+#endif	/* PILOT_Pin */
 
 #if INPUT_LOOP
  out1Clr();
  out2Clr();
  out3Clr();
  out4Clr();
-#endif
+#endif	/* INPUT_LOOP */
 
 #if CONSOLE
  puts(F0("C for command mode\n"));
  fflush(stdout);
-#endif
+#endif	/* CONSOLE */
 }
 
 #if defined(ARDUINO_AVR_MEGA2560)
@@ -309,18 +317,18 @@ typedef struct sRemData
  int fil;
  int emp;
  char buf[REM_SIZE];
-} T_REMDATA, *P_REMDATA;
+} T_REMDATA; //, *P_REMDATA;
 
 T_REMDATA rem;
 
-void remCheck(void);
-void procRem(void);
-int getHexRem(void);
+void remCheck();
+void procRem();
+int getHexRem();
 int valRem;
 
-#define REM_PRM 1
+//#define REM_PRM 1
 
-#endif	/* AVR_MEGA */
+#endif	/* ARDUINO_AVR_MEGA2560 */
 
 void loop()
 {
@@ -346,18 +354,6 @@ void loop()
 #endif /* INPUT_LOOP */
 
  procLoop();
-
-#if ledRead
- uint16_t curTime = intMillis();
- if ((curTime - ledTime) > LED_BLINK_TIME)
- {
-  ledTime = curTime;
-  if (ledRead())
-   ledClr();
-  else
-   ledSet();
- }
-#endif /* ledRead */
 }
 
 #if CONSOLE
@@ -383,7 +379,7 @@ void readTimer2()
 void cmdLoop()
 {
  puts(F0("command loop\n"));
- while (1)
+ while (true)
  {
   procLoop();
 
@@ -408,11 +404,11 @@ void cmdLoop()
     printf(F0("R - set rpm\n"));
 #endif	/* TCCR5A */
 
-#if defined(ENOCDER_TEST)
+#if defined(ENCODER_TEST)
     printf(F0("E - encoder lines\n"
 	      "S - start encoder\n"
 	      "Q - stop encoder\n"
-	      "V - r`everse encoder\n"));
+	      "V - reverse encoder\n"));
 #endif  /* ENCODER_TEST */
    }
    else if (ch == 'P')		/* test pins */
@@ -423,11 +419,11 @@ void cmdLoop()
      char flag = 0;
      printf(F0("testing..."));
      fflush(stdout);
-     while (1)
+     while (true)
      {
       delay(10);
       digitalWrite(val, (flag == 0) ? LOW : HIGH);
-      flag = !flag;
+      flag ^= 1; 
       if (DBGPORT.available())
       {
        ch = DBGPORT.read();
@@ -517,6 +513,9 @@ void cmdLoop()
       stepDisSet();
 #endif
      break;
+
+    default:
+     break;
     }     
     outStatus();
    }
@@ -553,7 +552,7 @@ void cmdLoop()
 #endif	/* PWM_SEL_Pin */
    
 #if INPUT_TEST			/* if testing inputs */
-   else if (ch == 'e')		/* control e stop */
+   else if (ch == 'e')		/* control estop */
    {
     ch = query(F1("eStopNo [%d]: "), eStopNoIn());
     if (ch == '1')
@@ -562,14 +561,14 @@ void cmdLoop()
      eStopNoTClr();
     ctlStatus();
    }
-   else if (ch == 'r')		/* reset e stop */
+   else if (ch == 'r')		/* reset estop */
    {
     ch = query(F1("eStopRst [%d]: "), eStopRstIn());
     if (ch == '1')
      eStopRstTSet();
     else if (ch == '0')
      eStopRstTClr();
-    else if (ch == 'c')		/* autmotically clear e stop */
+    else if (ch == 'c')		/* autmotically clear estop */
     {
      eStopNoTClr();
      eStopRstTSet();
@@ -616,7 +615,7 @@ void cmdLoop()
    else if (ch == 'C')
    {
     ch = query(F1("dbgCpEnable [%d]: "), dbgCpEnable);
-    dbgCpEnable = (ch == '1');
+    dbgCpEnable = (char) (ch == '1');
     if (dbgCpEnable)
      cpTime = intMillis();
    }
@@ -904,8 +903,9 @@ void cmdLoop()
     {
      printf(F0("period5 %ld encLines %d encPulse %d\n"),
 	    period5, encLines, encLines * 4);
-     rpm = (unsigned int) (USEC_MIN / (period5 * encLines * 4));
+     rpm = (int) (USEC_MIN / (period5 * encLines * 4));
     }
+
     if (query(&getnum, F1("rpm [%d]: "), rpm))
     {
      rpm = val;
@@ -919,6 +919,7 @@ void cmdLoop()
     long int pulseMin = (long int) rpm * encLines * 4;
     long int period =  (long int) USEC_MIN / ((long int) rpm * encLines * 4);
     printf(F0("pulseMin %ld pulsePeriod %ld usec\n"), pulseMin, period);
+
     if (period != period5)
     {
      period5 = period;
@@ -930,22 +931,33 @@ void cmdLoop()
 #endif	/* TCCR5A */
 #endif	/* ENCODER_TEST */
 
-  }
- }
+  } /* if DBGPORT.available */
+ } /* switch */
+} /* cmdLoop */
+
+void outTest()
+{
+ while (DBGPORT.availableForWrite() < 40)
+  procLoop();
 }
 
 void ctlStatus()
 {
  procLoop();		       /* run loop in case an input changed */
+ printf("available %d\n", DBGPORT.availableForWrite());
 
  printf(F0("eStopNoIn %d eStopNcIn %d eStopNoSet %d eStopNcSet %d\n"),
 	eStopNoIn(), eStopNcIn(), eStopNoSet(), eStopNcSet());
+ outTest();
  printf(F0("eStopRstIn %d eStopRstSet %d\n"),
 	eStopRstIn(), eStopRstSet());
+ outTest();
  printf(F0("spFwdIn %d spRevIn %d spFwdSet %d spRevSet %d\n"),
 	spFwdIn(), spRevIn(), spFwdSet(), spRevSet());
+ outTest();
  printf(F0("eStop %d wdEna %d cpActive %d\n"),
 	eStop, wdEna, cpActive);
+ outTest();
  printf(F0("eStopRly %d eStopPc %d stepDis %d spEna %d vfdFwd %d vfdRev %d\n"),
 	eStopRlyRead(), eStopPcRead(), stepDisRead(),
 	spEnaRead(), vfdFwdRead(), vfdRevRead());
@@ -1071,18 +1083,18 @@ void procLoop()
   wDogClr();			/* set signal high */
 
  procChargePump();		/* charge pump */
- procEStop();			/* e stop control */
+ procEStop();			/* estop control */
 
  wDogSet();			/* clear watchdog signal */
 
- if (!eStop)			/* if not e stop */
+ if (!eStop)			/* if not estop */
  {
   procPWM();			/* pwm control */
   procSpindle();		/* spindle control */
  }
- else				/* if e stop */
+ else				/* if estop */
  {
-  eStopAction();		/* e stop actions */
+  eStopAction();		/* estop actions */
  }
 
  if (CP_DEBUG)
@@ -1096,6 +1108,35 @@ void procLoop()
    }
   }
  }
+
+#if defined(PILOT_Pin)
+  if (eStop)
+  {
+   uint16_t t = intMillis();
+   if ((t - pilotTime) > PILOT_INTERVAL)
+   {
+    pilotTime = t;
+    if (pilotRead())
+     pilotClr();
+    else
+     pilotSet();
+   }
+  }
+  else
+   pilotClr();
+#endif	/* PILOT_Pin */
+
+#if ledRead
+ uint16_t curTime = intMillis();
+ if ((curTime - ledTime) > LED_BLINK_TIME)
+ {
+  ledTime = curTime;
+  if (ledRead())
+   ledClr();
+  else
+   ledSet();
+ }
+#endif /* ledRead */
 }
 
 void procChargePump()
@@ -1124,7 +1165,7 @@ void procChargePump()
  }
  else				/* if charge pump active */
  {
-  if (!eStop			/* if not in e stop */
+  if (!eStop			/* if not in estop */
   &&  !cpActive)		/* charge pump was inactive */
   {
    cpActive = 1;		/* set to active */
@@ -1137,18 +1178,18 @@ void procChargePump()
 
 void procEStop()
 {
- if (eStopNoSet() || eStopNcSet()) /* if either e stop condition */
-  eStopSet();			/* set e stop condition */
- else				/* if e stop button released */
+ if (eStopNoSet() || eStopNcSet()) /* if either estop condition */
+  eStopSet();			/* set estop condition */
+ else				/* if estop button released */
  {
   if (eStopRstSet())		/* if estop reset */
   {
-   if (eStop)			/* if in e stop state */
+   if (eStop)			/* if in estop state */
    {
     if (lastResetTime == 0)	/* if timer not active */
      lastResetTime = intMillis(); /* set debounce timer */
     else if ((intMillis() - lastResetTime) > RESET_DEBOUNCE_TIME) /* if tmo */
-     eStopClr();		/* clear e stop condition */
+     eStopClr();		/* clear estop condition */
    }
   }
   else				/* if reset button not pushed */
@@ -1257,7 +1298,7 @@ void procSpindle()
     putx0('R');
   }
  }
- else				/* if neither forward or reverse */
+ else				/* if neither forward nor reverse */
  {
   if (vfdFwdRead())
   {
@@ -1298,7 +1339,7 @@ void eStopAction()
 
 void eStopSet()
 {
- eStop = 1;			/* start in e stop */
+ eStop = 1;			/* start in estop */
  wdEna = 0;			/* start with watchdog disabled */
  cpActive = 0;			/* set charge pump to inactive */
  pwmActive = 0;			/* set pwm to inactive */
@@ -1309,10 +1350,10 @@ void eStopSet()
 
 void eStopClr()
 {
- eStop = 0;			/* start in e stop */
+ eStop = 0;			/* start in estop */
  wdEna = 1;			/* start with watchdog disabled */
- eStopRlySet();			/* enable e stop relay */
- eStopPcSet();			/* enable pc e stop */
+ eStopRlySet();			/* enable estop relay */
+ eStopPcSet();			/* enable pc estop */
  stepDisSet();			/* disable stepper motors */
 }
 
@@ -1365,7 +1406,7 @@ ISR(TIMER2_OVF_vect)
 
 ISR(INT0_vect)
 {
- if (!eStop)			// if e stop not set
+ if (!eStop)			// if estop not set
  {
   unsigned char pwm = PWM_In;
   TCCR2B = 0;			// stop timer
@@ -1406,7 +1447,7 @@ ISR(INT0_vect)
 
 ISR(INT0_vect)
 {
- if (!eStop)			// if e stop not set
+ if (!eStop)			// if estop not set
  {
   unsigned char pwm = PWM_In;
   if (pwm & PWM_Mask)		// low to high transition
@@ -1449,7 +1490,7 @@ ISR(INT1_vect)
   else
    dbg2Set();
  }
- if (!eStop)			// if e stop not active
+ if (!eStop)			// if estop not active
  {
   cpTime = ((P_SHORT_LONG) &timer0_millis)->low;
  }
@@ -1589,7 +1630,7 @@ ISR(TIMER5_OVF_vect)
    syncClr();			/* clear sync bit */
   }
 
-  if (!encRev)			/* if forwared */
+  if (!encRev)			/* if forward */
   {
    /* 00   01   11   10   */
    /* 0010 0100 1101 1011 */
@@ -1607,6 +1648,9 @@ ISR(TIMER5_OVF_vect)
     break;
    case 3:			/* 10 */
     bClr();			/* 00 0010 2 */
+    break;
+   default:
+    encState = 0;
     break;
    }
   }
@@ -1628,6 +1672,9 @@ ISR(TIMER5_OVF_vect)
     break;
    case 3:			/* 01 */
     aClr();			/* 00 0001 1 */
+    break;
+   default:
+    encState = 0;
     break;
    }
   }
@@ -1654,7 +1701,7 @@ inline void putRem(char ch)
  REMPORT.write(ch);
 }
 
-void remCheck(void)
+void remCheck()
 {
  while (REMPORT.available())
  {
@@ -1711,7 +1758,7 @@ int getRem()
  {
   rem.count -= 1;
   int emp = rem.emp;
-  ch = rem.buf[emp];
+  ch = (unsigned char) rem.buf[emp];
   emp += 1;
   if (emp >= REM_SIZE)
    emp = 0;
@@ -1722,7 +1769,7 @@ int getRem()
  return(ch);
 }
 
-int getHexRem(void)
+int getHexRem()
 {
  char ch;
  char count;
@@ -1746,14 +1793,12 @@ int getHexRem(void)
    {
     ch -= 'a' - 10;
    }
-   else if (ch == ' ')
-   {
+   else if ((ch == ' ') || (ch == '\r') || (ch < 0))
     break;
-   }
-   else if (ch == '\r')
-    break;
-   else if (ch < 0)
-    break;
+//   else if (ch == '\r')
+//    break;
+//   else if (ch < 0)
+//    break;
    else
     continue;
 
@@ -1812,7 +1857,28 @@ void sendHexRem(char *p, int size)
   putRem('0');
 }
 
-void procRem(void)
+#if ENCODER_TEST
+void setRpmTimer()
+{
+ rpm = mVar.mParmRpm;
+ encLines = mVar.mParmEncLines;
+  
+ printf(F0("rpm %d encLines %d encPulse %d\n"),
+	rpm, encLines, encLines * 4);
+ long int pulseMin = (long int) rpm * encLines * 4;
+ long int period =  (long int) USEC_MIN / ((long int) rpm * encLines * 4);
+ printf(F0("pulseMin %ld pulsePeriod %ld usec\n"), pulseMin, period);
+
+ if (period != period5)
+ {
+  period5 = period;
+  stopTimer5();
+  initTimer5(period5);
+ }
+}
+#endif
+
+void procRem()
 {
  int parm;
  int ch = getRem();
@@ -1820,22 +1886,21 @@ void procRem(void)
  {
   if (getHexRem())
   {
+   printf(F0("0x%02x\n"), valRem);
    switch(valRem)
    {
    case MEGA_SET_RPM:
-    DBGPORT.write('1');
     if (getHexRem())
     {
      parm = valRem;
      if (parm == 0)
       stopTimer1();
      else
-      initTimer1(valRem);
+      initTimer1(parm);
     }
     break;
 
    case MEGA_GET_RPM:
-    DBGPORT.write('2');
     putRem(' ');
     sendHexRem((char *) &timer1DutyCyc, sizeof(timer1DutyCyc));
     break;
@@ -1866,39 +1931,60 @@ void procRem(void)
 
    case MEGA_SET_VAL:
    {
-    getHexRem();			/* read the parameter number */
-    int parm = valRem;
-    if (parm < MPARM_MAX_PARM)		/* if in range */
+    getHexRem();		/* read the parameter number */
+    parm = valRem;
+    if (parm < M_PARM_MAX_PARM)	/* if in range */
     {
      T_DATA_UNION parmVal;
-     getHexRem();			/* get the value */
+     getHexRem();		/* get the value */
      parmVal.t_int = valRem;
      setMegaVar(parm, parmVal);
+     printf("set parm %2x val %4x\n", parm, parmVal.t_int);
     }
    }
-    break;
+   break;
 
    case MEGA_READ_VAL:
    {
     getHexRem();		/* save the parameter number */
-    int parm = valRem;
-    T_DATA_UNION parmVal;
-    parmVal.t_int = 0;
-    getMegaVar(parm, &parmVal);
-    int size = megaParm[parm];
-    printf(F0("r p %2x s %d v %8x\n"),
-	   (unsigned int) parm, size, parmVal.t_unsigned_int);
-    sendHexRem((char *) &parmVal.t_char, size); /* send the response */
+    parm = valRem;
+    if (parm < M_PARM_MAX_PARM)	/* if in range */
+    {
+     T_DATA_UNION parmVal;
+     parmVal.t_int = 0;
+     getMegaVar(parm, &parmVal);
+     char size = megaParm[parm];
+     printf(F0("r p %2x s %d v %8x\n"),
+	    (unsigned int) parm, size, parmVal.t_unsigned_int);
+     sendHexRem((char *) &parmVal.t_char, size); /* send the response */
+    }
    }
+   break;
+
+#if ENCODER_TEST
+   case MEGA_ENC_START:
+    setRpmTimer();
+    encoderStart();
+    break;
+
+   case MEGA_ENC_STOP:
+    encoderStop();
+    break;
+
+   case MEGA_UPDATE_RPM:
+    if (encRun)
+     setRpmTimer();
+    break;
+#endif	/* ENCODER_TEST */
 
    default:
-    printf(F0("default\n"));
+    printf(F0("default 0x%02x\n"), valRem);
     break;
-   }
-  }
- }
+   } /* switch */
+  } /* if getHexRem() */
+ } /* if ch == 1 */
 
- while (1)
+ while (true)
  {
   ch = getRem();
   if (ch < 0)

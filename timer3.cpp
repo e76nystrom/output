@@ -37,7 +37,7 @@ T_TIMER tmr3Cfg[] =
  {2, _BV(CS32) | _BV(CS30)}
 };
 
-#define T3_CFGLEN (sizeof(tmr3Cfg) / sizeof(T_TIMER))
+#define T3_CFGLEN ((unsigned char) (sizeof(tmr3Cfg) / sizeof(T_TIMER)))
 
 void initTimer3()
 {
@@ -83,7 +83,7 @@ void initTimer3(long uSec)
   timer3Prescale = cfg->sel;
  }
 
- // stop timer, clear wavefrom gen bits, clear input capture bits
+ // stop timer, clear waveform gen bits, clear input capture bits
  TCCR3B = 0;
  // disable all pwm output and clear waveform generator bits
  TCCR3A = 0;
@@ -100,7 +100,7 @@ void initTimer3(long uSec)
  ICR3 = cycles.low;
  // clear interrupt flags
  TIFR5 = _BV(ICF3) | _BV(OCF3C) | _BV(OCF3B) | _BV(OCF3A) | _BV(TOV3);
- // enable overflow interrrupt
+ // enable overflow interrupt
  TIMSK3 = _BV(TOIE3);
  // set clock divider and enable clock
  TCCR3B &= ~(_BV(CS30) | _BV(CS31) | _BV(CS32));
@@ -136,6 +136,8 @@ void pwm1Timer3(unsigned int duty)
   TCCR3A |= _BV(COM3A1);
   TIMSK3 |= _BV(OCIE3A);
 #if CONSOLE
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-attributes"
   printf(F0("DDRE %02x TCCR3A %02x OCR3A %02x\n"), DDRE, TCCR3A, OCR3A);
 #endif
  }

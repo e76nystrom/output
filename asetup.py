@@ -1,4 +1,4 @@
-#!/cygdrive/c/Python37/Python.exe
+#!/cygdrive/c/Python310/Python.exe
 #!/cygdrive/c/DevSoftware/Python/Python36-32/Python.exe
 
 from sys import argv, stdout

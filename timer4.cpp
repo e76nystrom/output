@@ -68,7 +68,7 @@ void initTimer4(long uSec)
   timer4Prescale = cfg->sel;
  }
 
- // stop timer, clear wavefrom gen bits, clear input capture bits
+ // stop timer, clear waveform gen bits, clear input capture bits
  TCCR4B = 0;
  // disable all pwm output and clear waveform generator bits
  TCCR4A = 0;
@@ -85,7 +85,7 @@ void initTimer4(long uSec)
  ICR4 = cycles.low;
  // clear interrupt flags
  TIFR5 = _BV(ICF4) | _BV(OCF4C) | _BV(OCF4B) | _BV(OCF4A) | _BV(TOV4);
- // enable overflow interrrupt
+ // enable overflow interrupt
  TIMSK4 = _BV(TOIE4);
  // set clock divider and enable clock
  TCCR4B &= ~(_BV(CS40) | _BV(CS41) | _BV(CS42));
@@ -108,6 +108,8 @@ void pwm1Timer4(unsigned int duty)
  TCCR4A |= _BV(COM4A1);
  TIMSK4 |= _BV(OCIE4A);
 #if CONSOLE
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wunknown-attributes"
  printf(F0("DDRE %02x TCCR4A %02x OCR4A %02x\n"), DDRE, TCCR4A, OCR4A);
 #endif
 }

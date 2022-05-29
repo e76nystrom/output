@@ -1,7 +1,6 @@
 #if !defined(INCLUDE)
 
 #include <Arduino.h>
-#include <stdio.h>
 #include "struct.h"
 #include "config.h"
 
@@ -9,9 +8,9 @@
 #define EXT
 #endif
 
-EXTC void initTimer1(unsigned int val);
+EXTC void initTimer1(unsigned int dutyCycle);
 EXTC void stopTimer1();
-EXTC int timer1DutyCyc;
+EXTC unsigned int timer1DutyCyc;
 
 #define TMR1_PWM_MAX 1024
 
@@ -54,7 +53,7 @@ void initTimer1(unsigned int dutyCycle)
 void stopTimer1()
 {
  T1_PWM_A_DDR |= T1_PWM_A_Mask;	/* set pin to an output */
- TCCR1A = 0;			/* disaple pwm */
+ TCCR1A = 0;			/* disable pwm */
  TCCR1B = 0;			/* stop timer */
  t1PwmAClr();			/* clear pwm output pin */
 }
